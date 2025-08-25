@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../assets/logowhite.png";
+import logo from "../../assets/logowhite.png";
 
 const LINKS = [
   { id: "inicio", label: "Inicio", href: "#inicio" },

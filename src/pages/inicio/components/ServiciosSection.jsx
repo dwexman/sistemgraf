@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import blueBlobs from "../assets/blueblobs.png";
+import blueBlobs from "../../../assets/blueblobs.png";
 
 const servicios = [
   { id: 1, titulo: "Soluciones en organigrama y gestión empresarial" },

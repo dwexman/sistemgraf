@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import sistemImg from "../assets/sistemimgblue.png";
+import sistemImg from "../../../assets/sistemimgblue.png";
 
 export default function About() {
   const sectionRef = useRef(null);
@@ -23,7 +23,7 @@ export default function About() {
       if (!sec || !img) return;
       const r = sec.getBoundingClientRect();
       const centerDelta = r.top + r.height / 2 - window.innerHeight / 2;
-      const shift = Math.max(-24, Math.min(24, -centerDelta * 0.02)); // clamp ±24px
+      const shift = Math.max(-24, Math.min(24, -centerDelta * 0.02));
       img.style.transform = `translateY(${shift}px)`;
     };
     onScroll();
@@ -36,7 +36,7 @@ export default function About() {
   }, []);
 
   return (
-    <section id="about" ref={sectionRef} className="py-20 bg-gradient-to-br from-[#EFEEF5] to-[#E6F1F7] relative overflow-hidden">
+    <section id="about" ref={sectionRef} className="py-20 bg-[#EFEEF5] relative overflow-hidden">
       <div className="absolute top-0 left-0 w-72 h-72 bg-[#00A3E0]/5 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#005587]/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
       
