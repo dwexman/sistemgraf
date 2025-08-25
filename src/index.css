@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/* Animaciones cards Servicios (en inicio) */
+.fall-card {
+  opacity: 0;
+  transform: translateY(-56px) rotate(-1.2deg) scale(0.985);
+  will-change: transform, opacity;
+}
+
+.cards-entered .fall-card {
+  animation: card-enter var(--dur, 3000ms) cubic-bezier(.19,1,.22,1) var(--delay, 0ms) both;
+}
+
+@keyframes card-enter {
+  0%   { opacity: 0; transform: translateY(-56px) rotate(-1.2deg) scale(0.985); }
+  45%  { opacity: 1; transform: translateY(-16px) rotate(-0.5deg)  scale(1); }
+  75%  {           transform: translateY(-6px)  rotate(-0.15deg); }
+  100% { opacity: 1; transform: translateY(0)   rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fall-card { opacity: 1 !important; transform: none !important; animation: none !important; }
+}
