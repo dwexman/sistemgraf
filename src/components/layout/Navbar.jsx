@@ -1,82 +1,145 @@
 import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import logo from "../../assets/logowhite.png";
 
 const LINKS = [
-  { id: "inicio", label: "Inicio", href: "#inicio" },
-  { id: "servicios", label: "Servicios", href: "#servicios" },
-  { id: "blog", label: "Blog", href: "#blog" },
-  { id: "contacto", label: "Contacto", href: "#contacto" },
+  { id: "inicio", label: "Inicio", to: "/" },
+  { id: "servicios", label: "Servicios", to: "/servicios" },
+  { id: "blog", label: "Blog", to: "/blog" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState("inicio");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const active = location.pathname;
 
-  const linkClass = (id) =>
+  const linkClass = (to) =>
     `px-1 py-2 border-b-2 ${
-      active === id ? "border-white" : "border-transparent"
+      active === to ? "border-white" : "border-transparent"
     } hover:border-white transition`;
+
+  const goToContacto = (e) => {
+    e.preventDefault();
+    setOpen(false);
+    if (active === "/") {
+      const el = document.getElementById("contacto");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      navigate("/", { state: { scrollTo: "contacto" } });
+    }
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-[#0A2F4F] text-white shadow-sm">
-      <nav className="w-full px-0">
-        <div className="flex h-16 items-center">
+      <nav className="w-full">
+        {/* altura aumentada: h-20 */}
+        <div className="flex h-20 items-center justify-between px-3 sm:px-4">
+          {/* Izquierda: logo + links */}
           <div className="flex items-center gap-8">
-            <a href="/" className="flex items-center">
-              <img src={logo} alt="Logo" className="h-12 w-auto md:h-14" />
-            </a>
+            <Link to="/" className="flex items-center">
+              {/* logo más grande */}
+              <img src={logo} alt="Logo" className="h-16 w-auto md:h-18" />
+            </Link>
 
             <div className="hidden md:flex items-center gap-6">
               {LINKS.map((l) => (
-                <a
+                <Link
                   key={l.id}
-                  href={l.href}
-                  className={linkClass(l.id)}
-                  onClick={() => setActive(l.id)}
+                  to={l.to}
+                  className={linkClass(l.to)}
+                  onClick={() => setOpen(false)}
                 >
                   {l.label}
-                </a>
+                </Link>
               ))}
+
+              {/* Contacto como scroll */}
+              <a
+                href="/#contacto"
+                onClick={goToContacto}
+                className="px-1 py-2 border-b-2 border-transparent hover:border-white transition"
+              >
+                Contacto
+              </a>
             </div>
           </div>
 
-          <div className="ml-auto md:hidden pr-2">
-            <button
-              onClick={() => setOpen((v) => !v)}
-              className="inline-flex items-center justify-center p-2 rounded-md hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              aria-label="Abrir menú"
+          {/* Derecha: Íconos oficiales + botón Intranet */}
+          <div className="hidden md:flex items-center gap-3">
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="p-2 rounded-full ring-1 ring-white/15 hover:ring-white/30 transition"
+              title="Instagram"
+              onClick={(e) => e.preventDefault()}
             >
-              {open ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
-                </svg>
-              )}
-            </button>
+              <FaInstagram size={20} />
+            </a>
+            <a
+              href="#"
+              aria-label="LinkedIn"
+              className="p-2 rounded-full ring-1 ring-white/15 hover:ring-white/30 transition"
+              title="LinkedIn"
+              onClick={(e) => e.preventDefault()}
+            >
+              <FaLinkedinIn size={20} />
+            </a>
+
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="rounded-full bg-white text-[#0A2F4F] px-4 py-2 text-sm font-semibold shadow-sm hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
+            >
+              Intranet
+            </a>
           </div>
         </div>
       </nav>
 
-      <div id="mobile-menu" className={`md:hidden ${open ? "block" : "hidden"} border-t border-white/10`}>
+      {/* Menú móvil (si lo usas) */}
+      <div
+        id="mobile-menu"
+        className={`md:hidden ${open ? "block" : "hidden"} border-t border-white/10`}
+      >
         <div className="px-3 py-3 space-y-1">
           {LINKS.map((l) => (
-            <a
+            <Link
               key={l.id}
-              href={l.href}
-              className={`${linkClass(l.id)} block`}
-              onClick={() => {
-                setActive(l.id);
-                setOpen(false);
-              }}
+              to={l.to}
+              className={`${linkClass(l.to)} block`}
+              onClick={() => setOpen(false)}
             >
               {l.label}
-            </a>
+            </Link>
           ))}
+          <a
+            href="/#contacto"
+            onClick={goToContacto}
+            className="block px-1 py-2 border-b-2 border-transparent hover:border-white transition"
+          >
+            Contacto
+          </a>
+
+          {/* Íconos + Intranet en mobile */}
+          <div className="pt-3 mt-2 border-t border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <a href="#" aria-label="Instagram" className="p-2 rounded-full ring-1 ring-white/15" onClick={(e)=>e.preventDefault()}>
+                <FaInstagram size={20} />
+              </a>
+              <a href="#" aria-label="LinkedIn" className="p-2 rounded-full ring-1 ring-white/15" onClick={(e)=>e.preventDefault()}>
+                <FaLinkedinIn size={20} />
+              </a>
+            </div>
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="rounded-full bg-white text-[#0A2F4F] px-4 py-2 text-sm font-semibold shadow-sm"
+            >
+              Intranet
+            </a>
+          </div>
         </div>
       </div>
     </header>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import blueBlobs from "../../../assets/blueblobs.png";
 
 const servicios = [
@@ -46,8 +47,8 @@ function Card({ titulo, delay = 0, dur = 2800 }) {
       <div className="flex flex-col items-center">
         <IconOrg />
         <p className="mb-6 leading-snug">{titulo}</p>
-        <a
-          href="#"
+        <Link
+          to="/servicios"
           className="
             inline-flex items-center justify-center
             rounded-[16px] px-6 py-2 text-sm font-semibold
@@ -57,7 +58,7 @@ function Card({ titulo, delay = 0, dur = 2800 }) {
           "
         >
           Leer más
-        </a>
+        </Link>
       </div>
 
       <div className="pointer-events-none absolute inset-0 rounded-[25px] shadow-[12px_16px_28px_rgba(0,0,0,0.35)] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -76,7 +77,7 @@ export default function Servicios() {
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          sec.classList.add("cards-entered"); 
+          sec.classList.add("cards-entered");
           io.disconnect();
         }
       },

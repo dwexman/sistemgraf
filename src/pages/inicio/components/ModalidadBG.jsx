@@ -1,0 +1,111 @@
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+
+// Componente de partículas 3D con movimiento más lento
+export default function ParticlesBG() {
+  const mountRef = useRef(null);
+
+  useEffect(() => {
+    const mount = mountRef.current;
+    if (!mount) return;
+
+    const prefersReduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true, 
+      alpha: true 
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); // Reducido para mejor rendimiento
+    mount.appendChild(renderer.domElement);
+
+    // Scene
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    camera.position.z = 5;
+
+    // Particles - cantidad ajustada para mejor rendimiento
+    const particles = 1200;
+    const positions = new Float32Array(particles * 3);
+    const colors = new Float32Array(particles * 3);
+    
+    const colorA = new THREE.Color("#003A63");
+    const colorB = new THREE.Color("#0077B6");
+    
+    for (let i = 0; i < particles; i++) {
+      const i3 = i * 3;
+      // Posición en una esfera
+      const radius = 4;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos((Math.random() * 2) - 1);
+      
+      positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i3 + 2] = radius * Math.cos(phi);
+      
+      // Color interpolado
+      const mixFactor = Math.random() * 0.5 + 0.25;
+      const color = new THREE.Color().copy(colorA).lerp(colorB, mixFactor);
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
+    }
+    
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    
+    const material = new THREE.PointsMaterial({
+      size: 0.05,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.6, // Más transparente para mejor legibilidad
+      blending: THREE.AdditiveBlending
+    });
+    
+    const particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+
+    // Resize
+    const resize = () => {
+      const w = mount.clientWidth;
+      const h = mount.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Animation - velocidad reducida significativamente
+    let raf;
+    const animate = () => {
+      raf = requestAnimationFrame(animate);
+      
+      if (!prefersReduce) {
+        particleSystem.rotation.y += 0.0003; // Reducido de 0.001 a 0.0003
+        particleSystem.rotation.x += 0.0002; // Reducido de 0.0005 a 0.0002
+      }
+      
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Cleanup
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      mount.removeChild(renderer.domElement);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={mountRef}
+      className="pointer-events-none absolute inset-0 z-0 opacity-60"
+    />
+  );
+}
