@@ -1,6 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import blueBlobs from "../../assets/blueblobs.png";
 
+// 🔽 Importa los íconos correspondientes (ajusta rutas si es necesario)
+import organigrama from "../../assets/organizational2.png";
+import evaluation from "../../assets/aprendizajecapacitaciones.png";
+import proveedores from "../../assets/evalproveedores.png";
+import analitica from "../../assets/psicometriamadurez.png";
+import stress from "../../assets/stresslaboral.png";
+import powerBI from "../../assets/evalBI.png";
+import assistant from "../../assets/seleccion.png";
+import climate from "../../assets/nlp.png";
+import desarrollo from "../../assets/gestiondesarrollo.png";
+
+// Mapa de iconos por id de servicio
+const ICONS = {
+  1: organigrama,
+  2: evaluation,
+  3: proveedores,
+  4: analitica,
+  5: stress,
+  6: powerBI,
+  7: assistant,
+  8: climate,
+  9: desarrollo,
+};
+
 const servicios = [
   {
     id: 1,
@@ -60,7 +84,8 @@ const servicios = [
   },
 ];
 
-function IconCircle() {
+// Badge circular con degradado (reutiliza tu estilo de IconCircle)
+function IconBadge({ src, alt }) {
   return (
     <div
       className="
@@ -70,28 +95,19 @@ function IconCircle() {
         shadow-[0_10px_20px_rgba(0,0,0,0.24)]
       "
     >
-      <svg
-        viewBox="0 0 24 24"
-        className="w-10 h-10"
-        fill="none"
-        stroke="white"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M12 6V3" />
-        <rect x="10" y="6" width="4" height="3" rx="1" />
-        <path d="M12 9v3M6 17v-3a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v3" />
-        <rect x="3" y="17" width="5" height="4" rx="1.2" />
-        <rect x="10" y="17" width="4" height="4" rx="1.2" />
-        <rect x="16" y="17" width="5" height="4" rx="1.2" />
-      </svg>
+      <img
+        src={src}
+        alt={alt}
+        className="w-14 h-14 md:w-16 md:h-16 object-contain"
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
     </div>
   );
 }
 
-function Card({ titulo, descripcion, visible, delay = 0 }) {
+function Card({ titulo, descripcion, icon, visible, delay = 0 }) {
   return (
     <div
       className={`
@@ -106,7 +122,12 @@ function Card({ titulo, descripcion, visible, delay = 0 }) {
       style={{ transitionDelay: `${delay}ms` }}
     >
       <div className="flex flex-col items-center">
-        <IconCircle />
+        {icon ? (
+          <IconBadge src={icon} alt={`${titulo} - icono`} />
+        ) : (
+          <IconBadge src={organigrama} alt="Icono" />
+        )}
+
         <h3 className="mb-3 text-[18px] font-extrabold leading-snug tracking-tight relative">
           {titulo}
           <span className="block w-12 h-[2px] bg-[#00A3E0] opacity-90 mt-2 rounded-full mx-auto" />
@@ -270,6 +291,7 @@ export default function Servicios() {
               key={s.id}
               titulo={s.titulo}
               descripcion={s.descripcion}
+              icon={ICONS[s.id]}
               visible={visible}
               delay={i * 120}
             />
