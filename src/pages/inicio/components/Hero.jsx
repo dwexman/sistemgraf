@@ -9,18 +9,16 @@ export default function Hero() {
       <NetworkCanvas />
 
       <div className="absolute inset-0 z-10 overflow-hidden">
-        {/* Blob grande (izquierda) */}
         <div
           aria-hidden="true"
           className="
             pointer-events-none select-none absolute
-            -top-[28%] -left-[60%]
-            w-[640px] h-[480px]
-            md:-top-[30%] md:-left-[46%]
+            -top-[20%] -left-[40%] 
+            w-[800px] h-[600px]
+            md:-top-[30%] md:-left-[46%] 
             md:w-[clamp(1200px,80vw,1800px)]
             md:h-[clamp(900px,62vw,1500px)]
-            opacity-30 md:opacity-95
-            transition-opacity
+            opacity-80 md:opacity-95
           "
         >
           <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -46,7 +44,6 @@ export default function Hero() {
           </svg>
         </div>
 
-        {/* Blob pequeño (derecha) */}
         <div
           aria-hidden="true"
           className="
@@ -68,22 +65,17 @@ export default function Hero() {
 
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
         <div className="w-full max-w-4xl text-center md:text-left md:ml-[5%] lg:ml-[8%] xl:ml-[10%]">
-          {/* Título: blanco en móvil, azul desde md */}
-          <h1 className="font-bold tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white md:text-[#0A2F4F]">
+          <h1 className="text-[#0A2F4F] font-bold tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
             Impulsamos la{" "}
-            <span className="bg-gradient-to-r from-[#A9D6FF] to-white md:from-[#005587] md:to-[#00A3E0] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#005587] to-[#00A3E0] bg-clip-text text-transparent">
               transformación del capital humano
             </span>
           </h1>
 
-          {/* Texto: blanco en móvil, azul desde md */}
           <p
-            className="
-              mt-5 md:mt-6 max-w-4xl
-              text-white/90 md:text-[#0A2F4F]/90
-              text-lg sm:text-xl md:text-2xl lg:text-[34px] xl:text-[38px]
-              leading-tight md:leading-[1.15]
-            "
+            className="mt-5 md:mt-6 text-[#0A2F4F]/90 max-w-4xl
+                       text-lg sm:text-xl md:text-2xl lg:text-[34px] xl:text-[38px]
+                       leading-tight md:leading-[1.15]"
           >
             A través de inteligencia de negocios, IA y análisis avanzado, potenciando el éxito
             organizacional en la era digital.
