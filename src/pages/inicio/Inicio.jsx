@@ -11,22 +11,22 @@ export default function Inicio() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Soporta llegar con state {scrollTo:'contacto'} o via hash /#contacto
-    const targetId =
-      location.state?.scrollTo || (location.hash ? location.hash.slice(1) : null);
+    const wantsContacto =
+      location.state?.scrollTo === "contacto" || location.hash === "#contacto";
 
-    if (targetId === "contacto") {
-      // Espera a que el DOM esté renderizado
-      requestAnimationFrame(() => {
+    if (!wantsContacto) return;
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
         const el = document.getElementById("contacto");
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "start" });
-          // Limpia el state para que no se repita al navegar dentro de Home
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        if (location.state?.scrollTo === "contacto") {
           navigate(".", { replace: true, state: null });
         }
-      });
-    }
-  }, [location, navigate]);
+      }, 0);
+    });
+  }, [location.key]);
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function Inicio() {
       <About />
       <ServiciosSection />
       <Modalidad />
-      <section id="contacto">
+      <section id="contacto" className="scroll-mt-24">
         <Contacto />
       </section>
     </>

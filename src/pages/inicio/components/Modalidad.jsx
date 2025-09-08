@@ -1,43 +1,46 @@
-import ModalidadBG from "./ModalidadBG"; // Cambiado de ModalidadBG a ParticlesBG
+import ModalidadBG from "./ModalidadBG";
+
+import nube from "../../../assets/nube.png";
+import suscription from "../../../assets/suscription.png";
+import escalabilidad from "../../../assets/escalabilidad.png";
+import soluciones from "../../../assets/soluciones.png";
 
 const items = [
-  "Acceso basado en la nube",
-  "Escalabilidad automática",
-  "Alta disponibilidad",
-  "Backups automáticos",
-  "Seguridad integrada",
-  "Soporte 24/7",
-  "Actualizaciones automáticas"
+  { title: "Mantenimiento", desc: "Plataforma gestionada por Inteligencia Integrada.", icon: nube },
+  { title: "Suscripción", desc: "Plan anual por usuario para controlar costos y acceder a todas las herramientas.", icon: suscription },
+  { title: "Escalabilidad", desc: "Ajuste dinámico de usuarios y módulos a medida del crecimiento de tu organización.", icon: escalabilidad },
+  { title: "Soluciones personalizadas", desc: "Adaptación de herramientas estratégicas según las necesidades específicas de cada empresa.", icon: soluciones },
 ];
 
-// Icono blanco (cloud/server) – inline SVG
-function IconCloud() {
+function Card({ title, desc, icon }) {
   return (
-    <svg viewBox="0 0 48 48" className="w-16 h-16" fill="none" stroke="white" strokeWidth="2">
-      <path d="M18 24a8 8 0 0 1 15.7-2.6A7 7 0 1 1 36 34H16a6 6 0 0 1 2-10z" stroke="white" />
-      <rect x="18" y="30" width="14" height="8" rx="2" fill="white" stroke="none" />
-      <path d="M20 30v-3h10v3M20 38v3M30 38v3" stroke="white" />
-    </svg>
-  );
-}
-
-function Card({ title }) {
-  return (
-    <div className="w-[200px] text-center">
-      {/* “Card” cuadrada con degradé azul e icono centrado */}
+    <div className="w-[200px] sm:w-[220px] text-center">
       <div
         className="
-          mx-auto mb-3 grid place-items-center
-          w-[160px] h-[160px] rounded-[25px]
-          shadow-[0_14px_30px_rgba(0,0,0,0.25)]
+          mx-auto mb-2.5 grid place-items-center
+          w-[128px] h-[128px] rounded-[22px]
+          shadow-[0_12px_26px_rgba(0,0,0,0.22)]
           bg-[linear-gradient(180deg,#002E49_0%,#005587_100%)]
           transition-transform duration-300 hover:scale-105
+          p-4
         "
       >
-        <IconCloud />
+        <img
+          src={icon}
+          alt={title}
+          className="w-[86px] h-[86px] object-contain"
+          loading="lazy"
+          draggable="false"
+        />
       </div>
-      {/* Título debajo */}
-      <p className="text-[#0A2F4F] font-medium leading-tight">{title}</p>
+
+      <h3 className="text-[#0A2F4F] font-semibold text-[18px] leading-tight">
+        {title}
+      </h3>
+
+      <p className="mt-1 text-[#0A2F4F] font-semibold text-[14px] leading-relaxed">
+        {desc}
+      </p>
     </div>
   );
 }
@@ -45,18 +48,23 @@ function Card({ title }) {
 export default function Modalidad() {
   return (
     <section id="modalidad" className="relative overflow-hidden bg-[#EFEEF5] py-16 sm:py-20">
-      {/* Fondo de partículas 3D */}
       <ModalidadBG />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-center text-[#0A2F4F] font-extrabold tracking-[0.12em] uppercase text-2xl sm:text-3xl mb-12">
-          MODALIDAD DE SERVICIO
+          MODALIDAD DE SERVICIOS
         </h2>
 
-        {/* 4 arriba + 3 abajo (se arma solo con wrap) */}
-        <div className="flex flex-wrap justify-center gap-x-16 gap-y-12">
-          {items.map((t, i) => (
-            <Card key={i} title={t} />
+        <div
+          className="
+            grid grid-cols-1 sm:grid-cols-2
+            gap-4 sm:gap-4
+            justify-items-center
+            mx-auto max-w-[240px] sm:max-w-[480px] md:max-w-[500px]
+          "
+        >
+          {items.map((it, i) => (
+            <Card key={i} title={it.title} desc={it.desc} icon={it.icon} />
           ))}
         </div>
       </div>

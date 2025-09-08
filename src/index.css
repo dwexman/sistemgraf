@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Animaciones cards Servicios (en inicio) */
 .fall-card {
   opacity: 0;
   transform: translateY(-56px) rotate(-1.2deg) scale(0.985);

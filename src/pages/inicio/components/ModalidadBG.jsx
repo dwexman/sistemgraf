@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-// Componente de partículas 3D con movimiento más lento
 export default function ParticlesBG() {
   const mountRef = useRef(null);
 
@@ -11,20 +10,17 @@ export default function ParticlesBG() {
 
     const prefersReduce = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
       alpha: true 
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); // Reducido para mejor rendimiento
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5)); 
     mount.appendChild(renderer.domElement);
 
-    // Scene
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     camera.position.z = 5;
 
-    // Particles - cantidad ajustada para mejor rendimiento
     const particles = 1200;
     const positions = new Float32Array(particles * 3);
     const colors = new Float32Array(particles * 3);
@@ -34,7 +30,6 @@ export default function ParticlesBG() {
     
     for (let i = 0; i < particles; i++) {
       const i3 = i * 3;
-      // Posición en una esfera
       const radius = 4;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos((Math.random() * 2) - 1);
@@ -43,7 +38,6 @@ export default function ParticlesBG() {
       positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       positions[i3 + 2] = radius * Math.cos(phi);
       
-      // Color interpolado
       const mixFactor = Math.random() * 0.5 + 0.25;
       const color = new THREE.Color().copy(colorA).lerp(colorB, mixFactor);
       colors[i3] = color.r;
@@ -59,14 +53,13 @@ export default function ParticlesBG() {
       size: 0.05,
       vertexColors: true,
       transparent: true,
-      opacity: 0.6, // Más transparente para mejor legibilidad
+      opacity: 0.6, 
       blending: THREE.AdditiveBlending
     });
     
     const particleSystem = new THREE.Points(geometry, material);
     scene.add(particleSystem);
 
-    // Resize
     const resize = () => {
       const w = mount.clientWidth;
       const h = mount.clientHeight;
@@ -77,21 +70,19 @@ export default function ParticlesBG() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Animation - velocidad reducida significativamente
     let raf;
     const animate = () => {
       raf = requestAnimationFrame(animate);
       
       if (!prefersReduce) {
-        particleSystem.rotation.y += 0.0003; // Reducido de 0.001 a 0.0003
-        particleSystem.rotation.x += 0.0002; // Reducido de 0.0005 a 0.0002
+        particleSystem.rotation.y += 0.0003; 
+        particleSystem.rotation.x += 0.0002; 
       }
       
       renderer.render(scene, camera);
     };
     animate();
 
-    // Cleanup
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);

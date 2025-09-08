@@ -4,9 +4,8 @@ export default function Hero() {
   return (
     <section
       id="inicio"
-      className="relative overflow-hidden bg-[#EFEEF5] min-h-screen flex items-center"
+      className="relative overflow-hidden bg-[#EFEEF5] min-h-[90vh] md:min-h-screen flex items-center"
     >
-
       <NetworkCanvas />
 
       <div className="absolute inset-0 z-10 overflow-hidden">
@@ -64,39 +63,39 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
-        <div className="w-full max-w-3xl text-center md:text-left md:ml-[5%] lg:ml-[8%] xl:ml-[10%]">
-          <h1 className="text-[#0A2F4F] font-bold leading-tight tracking-tight text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
-            Lideramos la
-            <br />
+      <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+        <div className="w-full max-w-4xl text-center md:text-left md:ml-[5%] lg:ml-[8%] xl:ml-[10%]">
+          <h1 className="text-[#0A2F4F] font-bold tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+            Impulsamos la{" "}
             <span className="bg-gradient-to-r from-[#005587] to-[#00A3E0] bg-clip-text text-transparent">
-              transformación
+              transformación del capital humano
             </span>
-            <br />
-            empresarial
           </h1>
 
-          <p className="mt-6 text-[#0A2F4F]/90 text-xl sm:text-2xl md:text-3xl md:mt-8 font-medium">
-            Hacia un futuro de excelencia
-            <br />
-            y crecimiento sostenible.
+          <p
+            className="mt-5 md:mt-6 text-[#0A2F4F]/90 max-w-4xl
+                       text-lg sm:text-xl md:text-2xl lg:text-[34px] xl:text-[38px]
+                       leading-tight md:leading-[1.15]"
+          >
+            A través de inteligencia de negocios, IA y análisis avanzado, potenciando el éxito
+            organizacional en la era digital.
           </p>
 
-          <div className="mt-10 md:mt-12 flex justify-center md:justify-start">
+          <div className="mt-8 md:mt-10 flex justify-center md:justify-start">
             <a
               href="#servicios"
               className="
                 inline-flex items-center justify-center
-                rounded-2xl px-8 py-4
-                text-white text-lg md:text-xl font-semibold text-center
+                rounded-2xl px-7 py-3 md:px-8 md:py-4
+                text-white text-base md:text-lg font-semibold text-center
                 shadow-lg hover:opacity-95 active:scale-[.98] transition-all duration-300
                 bg-gradient-to-r from-[#005587] to-[#00A3E0]
                 hover:shadow-xl transform hover:-translate-y-1
-                w-auto min-w-[200px]
+                w-auto min-w-[180px]
               "
             >
               Saber más
-              <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </a>

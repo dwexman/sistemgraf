@@ -4,33 +4,59 @@ import blueBlobs from "../../assets/blueblobs.png";
 const servicios = [
   {
     id: 1,
-    titulo: "Soluciones en organigrama y gestión empresarial",
+    titulo: "Organigramas Inteligentes para Empresas",
     descripcion:
-      "Diseño y optimización de estructuras organizacionales, definición de roles y flujos de trabajo para mejorar la eficiencia y la toma de decisiones.",
+      "Transforma la gestión organizacional visualizando y optimizando tu estructura de equipos en tiempo real. Nuestra solución integra inteligencia de negocios, dashboards interactivos y análisis avanzado para mapear jerarquías, identificar brechas y tomar decisiones estratégicas con agilidad, flexibilidad y total visibilidad, adaptando tu organización al ritmo del cambio digital.",
   },
   {
     id: 2,
-    titulo: "Automatización de procesos",
+    titulo: "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos",
     descripcion:
-      "Levantamiento de procesos críticos y automatización con herramientas low-code/no-code para reducir tiempos y errores operativos.",
+      "Convierte cada capacitación en resultados medibles. Analizamos el impacto y el aprendizaje logrado por tus colaboradores a través de indicadores visuales y analítica avanzada, facilitando la toma de decisiones sobre futuras formaciones y asegurando que la inversión en desarrollo realmente potencie a tu equipo.",
   },
   {
     id: 3,
-    titulo: "Inteligencia de negocios (BI)",
+    titulo: "Evaluación de Proveedores de Capacitación",
     descripcion:
-      "Tableros y analítica con métricas accionables para dirección y equipos. Integraciones con tus fuentes de datos y KPIs claros.",
+      "Asegura que cada aliado estratégico sume valor a tu empresa. Con nuestro benchmarking y BI, compara desempeño, calidad y retorno de inversión de tus proveedores de capacitación usando métricas objetivas y dashboards, lo que te permite elegir a los mejores e impulsar la excelencia en el desarrollo de talento.",
   },
   {
     id: 4,
-    titulo: "Gestión del cambio",
+    titulo:
+      "Psicometría Nivel de Madurez Organizacional en Competencias de Analítica para Transformación Digital",
     descripcion:
-      "Acompañamiento en la adopción tecnológica y cultural: comunicación, capacitación y soporte para una transición exitosa.",
+      "Mide el pulso analítico y digital de tu organización. Identificamos la madurez en competencias clave, las fortalezas y las brechas del talento mediante psicometría avanzada y BI, acelerando la transformación digital y creando un equipo preparado para los retos de la nueva economía.",
   },
   {
     id: 5,
-    titulo: "Consultoría en experiencia de cliente",
+    titulo:
+      "Psicometría para Evaluación de Estrés Laboral y Riesgos de Clima Organizacional",
     descripcion:
-      "Mapeo de journeys, detección de fricciones y diseño de mejoras que eleven la satisfacción y la retención de tus clientes.",
+      "Anticípate a los riesgos antes de que impacten. Detectamos, analizamos y gestionamos el estrés laboral y los factores de clima mediante psicometría, modelos analíticos y dashboards en tiempo real, permitiendo implementar acciones preventivas y mejorar el bienestar y la productividad de tu organización.",
+  },
+  {
+    id: 6,
+    titulo: "Evaluación de Cultura Organizacional con BI y Psicometría",
+    descripcion:
+      "Impulsa una cultura sólida y alineada a la estrategia de negocio. Medimos, visualizamos y detectamos puntos críticos y fortalezas culturales a través de herramientas psicométricas e inteligencia de negocios, facilitando intervenciones efectivas para transformar tu organización desde dentro.",
+  },
+  {
+    id: 7,
+    titulo: "Reclutamiento y Selección Inteligente con IA",
+    descripcion:
+      "Lleva el hiring a nivel superior con IA. Automatiza la búsqueda, evaluación y selección de talento utilizando análisis automático de CVs, matching algorítmico y video entrevistas con inteligencia artificial, identificando los candidatos ideales y asegurando el fit cultural y competencial.",
+  },
+  {
+    id: 8,
+    titulo: "Evaluaciones de Clima Organizacional con NLP",
+    descripcion:
+      "Escucha y entiende lo que piensa realmente tu equipo. Empleamos procesamiento de lenguaje natural para analizar comentarios abiertos, identificar patrones y extraer insights en tiempo real, reduciendo sesgos y permitiendo una gestión proactiva del clima laboral.",
+  },
+  {
+    id: 9,
+    titulo: "Gestión de Desempeño y Planes de Desarrollo Automáticos",
+    descripcion:
+      "Impulsa el crecimiento de tus colaboradores con tecnología. Implementamos evaluaciones de desempeño 90° y 360° potenciadas por IA que generan planes de desarrollo individuales automáticos, con monitoreo en tiempo real y retroalimentación personalizada para acelerar el alto rendimiento y el avance profesional.",
   },
 ];
 
@@ -39,14 +65,14 @@ function IconCircle() {
     <div
       className="
         flex items-center justify-center
-        w-16 h-16 rounded-full mb-4
+        w-20 h-20 rounded-full mb-4
         bg-gradient-to-br from-[#006699] to-[#004366]
-        shadow-[0_8px_18px_rgba(0,0,0,0.22)]
+        shadow-[0_10px_20px_rgba(0,0,0,0.24)]
       "
     >
       <svg
         viewBox="0 0 24 24"
-        className="w-8 h-8"
+        className="w-10 h-10"
         fill="none"
         stroke="white"
         strokeWidth="1.6"
@@ -69,28 +95,81 @@ function Card({ titulo, descripcion, visible, delay = 0 }) {
   return (
     <div
       className={`
-        relative w-[280px] sm:w-[300px] rounded-[24px] p-7 text-white text-center
+        group relative rounded-[24px] p-7 text-white
         bg-gradient-to-b from-[#004366] to-[#002E49]
         shadow-[0_18px_28px_rgba(0,0,0,0.25)]
         transition-all duration-500 will-change-transform
         ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}
-        hover:scale-[1.03] hover:shadow-[0_22px_34px_rgba(0,0,0,0.35)]
+        hover:scale-[1.02] hover:shadow-[0_22px_34px_rgba(0,0,0,0.35)]
+        text-center
       `}
       style={{ transitionDelay: `${delay}ms` }}
     >
       <div className="flex flex-col items-center">
         <IconCircle />
-        <h3 className="mb-3 text-lg font-extrabold leading-snug tracking-tight relative">
+        <h3 className="mb-3 text-[18px] font-extrabold leading-snug tracking-tight relative">
           {titulo}
-          <span className="block w-12 h-[2px] bg-[#00A3E0] opacity-90 mx-auto mt-2 rounded-full" />
+          <span className="block w-12 h-[2px] bg-[#00A3E0] opacity-90 mt-2 rounded-full mx-auto" />
         </h3>
-        <p className="text-sm leading-relaxed text-[#E1EAF4]/95">
+        <p className="text-[14px] leading-relaxed text-[#E1EAF4]/95">
           {descripcion}
         </p>
       </div>
 
-      {/* Halo suave al borde en hover */}
       <div className="pointer-events-none absolute inset-0 rounded-[24px] ring-1 ring-white/10 group-hover:ring-white/20 transition" />
+    </div>
+  );
+}
+
+function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }) {
+  const isOpen = activeId === id;
+  return (
+    <div
+      className={`
+        group rounded-2xl border border-white/15
+        bg-gradient-to-br from-[#005587] to-[#00A3E0] text-white
+        shadow-sm hover:shadow-md transition-all duration-300
+        ${isOpen ? "ring-1 ring-white/40" : ""}
+      `}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <button
+        onClick={() => setActiveId(isOpen ? null : id)}
+        aria-expanded={isOpen}
+        aria-controls={`${id}-content`}
+        className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
+      >
+        <span className="font-extrabold text-[20px] md:text-[22px] leading-tight">
+          {title}
+        </span>
+
+        <span
+          className={`
+            inline-flex h-9 w-9 items-center justify-center rounded-full
+            border border-white/20 shadow-sm
+            bg-white text-[#005587]
+            transition-transform duration-300 ${isOpen ? "rotate-180" : ""}
+          `}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <div
+        id={`${id}-content`}
+        className={`
+          grid overflow-hidden transition-[grid-template-rows] duration-500 ease-out
+          ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}
+        `}
+      >
+        <div className="min-h-0">
+          <div className="px-5 md:px-6 pb-5 md:pb-6 text-white/95 leading-relaxed">
+            {children}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -98,11 +177,11 @@ function Card({ titulo, descripcion, visible, delay = 0 }) {
 export default function Servicios() {
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
     const sec = sectionRef.current;
     if (!sec) return;
-
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -112,7 +191,6 @@ export default function Servicios() {
       },
       { threshold: 0.12 }
     );
-
     io.observe(sec);
     return () => io.disconnect();
   }, []);
@@ -123,7 +201,6 @@ export default function Servicios() {
       ref={sectionRef}
       className="relative overflow-hidden bg-[#EFEEF5] py-16 sm:py-20"
     >
-      {/* Fondo blobs */}
       <img
         src={blueBlobs}
         alt=""
@@ -138,20 +215,109 @@ export default function Servicios() {
       />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-[#0A2F4F] font-extrabold tracking-[0.12em] uppercase text-2xl sm:text-3xl mb-12">
-          Nuestros Servicios
-        </h2>
+        <div className="relative mx-auto max-w-5xl text-center">
+          <style>{`
+    @keyframes shine { 0% { background-position: 0% } 100% { background-position: 200% } }
+    @keyframes underlineGrow { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+    @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-5px) } }
+    .animate-shine { animation: shine 6s linear infinite }
+    .animate-underline { transform-origin: 0 50%; transform: scaleX(0); animation: underlineGrow .9s cubic-bezier(.2,.9,.2,1) .15s forwards }
+    .sparkle { animation: floaty 4s ease-in-out infinite }
+  `}</style>
 
-        <div className="flex flex-wrap justify-center gap-8 sm:gap-10">
+          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+            <div className="w-[720px] h-[220px] rounded-full blur-3xl
+                    bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,163,224,.18),rgba(0,85,135,.12)_45%,transparent_70%)]" />
+          </div>
+
+          <h2
+            className="
+      relative inline-block font-extrabold uppercase tracking-[0.18em]
+      text-3xl sm:text-4xl
+      text-transparent bg-clip-text
+      bg-[linear-gradient(90deg,#005587,#00A3E0,#005587)]
+      [background-size:200%_auto] animate-shine
+    "
+          >
+            Nuestros Servicios
+
+            <span className="absolute -left-8 -top-2 sparkle" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00A3E0" strokeWidth="2">
+                <path d="M12 2l1.8 4.2L18 8l-4.2 1.8L12 14l-1.8-4.2L6 8l4.2-1.8L12 2z" />
+              </svg>
+            </span>
+            <span className="absolute -right-7 top-1 sparkle [animation-delay:1.2s]" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69A9D1" strokeWidth="2">
+                <path d="M12 3l1.2 2.8L16 7l-2.8 1.2L12 11l-1.2-2.8L8 7l2.8-1.2L12 3z" />
+              </svg>
+            </span>
+
+            <span className="block mx-auto mt-3 h-[6px] w-48 rounded-full
+                    bg-[linear-gradient(90deg,#005587, #00A3E0, #005587)]
+                    animate-underline" />
+          </h2>
+
+          <p className="mt-5 text-[#0A2F4F] font-semibold leading-snug
+                text-[17px] sm:text-[19px] max-w-4xl mx-auto">
+            Disfruta de <span className="font-bold">dashboards interactivos</span>, <span className="font-bold">analítica avanzada</span> y
+            <span className="font-bold"> resultados en tiempo real</span> para una gestión ágil, precisa y escalable.
+          </p>
+        </div>
+
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {servicios.map((s, i) => (
             <Card
               key={s.id}
               titulo={s.titulo}
               descripcion={s.descripcion}
               visible={visible}
-              delay={i * 140}
+              delay={i * 120}
             />
           ))}
+        </div>
+
+        <div className="mt-12 space-y-4">
+          <AccordionItem
+            id="desarrollo-medida"
+            title="Servicio de Desarrollo a la medida para necesidades de capital humano"
+            activeId={activeId}
+            setActiveId={setActiveId}
+          >
+            <p className="mb-3">
+              Desarrollos personalizados enfocados en las necesidades estratégicas de tu capital
+              humano. Creamos soluciones tecnológicas a la medida para potenciar procesos de
+              gestión, integración de sistemas, automatización de indicadores clave y desarrollo
+              de herramientas BI de acuerdo con los retos específicos de tu organización.
+            </p>
+            <p>
+              Nuestros desarrollos se adaptan al escenario actual de tu equipo, facilitando el
+              diagnóstico de brechas, el monitoreo del talento y el crecimiento organizacional
+              sostenible.
+            </p>
+          </AccordionItem>
+
+          <AccordionItem
+            id="consultoria-bi-psico"
+            title="Servicio de Consultoría en Inteligencia de Negocios y Psicología Organizacional"
+            activeId={activeId}
+            setActiveId={setActiveId}
+          >
+            <p className="mb-3">
+              En nuestro Servicio de Consultoría en Psicología Organizacional con herramientas
+              avanzadas de Inteligencia de Negocios, ponemos el énfasis en la experiencia de
+              nuestro equipo de psicólogos organizacionales certificados, quienes lideran
+              la aplicación de remediales estratégicos y acciones de mejora basadas en datos
+              rigurosos.
+            </p>
+            <p>
+              Analizamos métricas clave del capital humano mediante dashboards avanzados y diagnósticos
+              exhaustivos, para desarrollar intervenciones personalizadas que impactan el bienestar,
+              el clima laboral, la gestión del desempeño y el desarrollo de talento. Nuestro
+              acompañamiento abarca desde la asesoría táctica hasta la ejecución de remediales
+              diseñados específicamente por expertos en psicología, asegurando resultados profundos,
+              sostenibles y alineados con los objetivos de transformación digital de tu organización.
+            </p>
+          </AccordionItem>
         </div>
       </div>
     </section>

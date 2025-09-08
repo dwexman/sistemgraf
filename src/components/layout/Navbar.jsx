@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FiMenu, FiX } from "react-icons/fi";
 import logo from "../../assets/logowhite.png";
 
 const LINKS = [
   { id: "inicio", label: "Inicio", to: "/" },
   { id: "servicios", label: "Servicios", to: "/servicios" },
-  { id: "blog", label: "Blog", to: "/blog" },
+  // { id: "blog", label: "Blog", to: "/blog" }, 
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const active = location.pathname;
 
   const linkClass = (to) =>
@@ -20,29 +20,16 @@ export default function Navbar() {
       active === to ? "border-white" : "border-transparent"
     } hover:border-white transition`;
 
-  const goToContacto = (e) => {
-    e.preventDefault();
-    setOpen(false);
-    if (active === "/") {
-      const el = document.getElementById("contacto");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      navigate("/", { state: { scrollTo: "contacto" } });
-    }
-  };
-
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-[#0A2F4F] text-white shadow-sm">
       <nav className="w-full">
-        {/* altura aumentada: h-20 */}
         <div className="flex h-20 items-center justify-between px-3 sm:px-4">
-          {/* Izquierda: logo + links */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center">
-              {/* logo más grande */}
+            <Link to="/" className="flex items-center" onClick={() => setOpen(false)}>
               <img src={logo} alt="Logo" className="h-16 w-auto md:h-18" />
             </Link>
 
+            {/* Links desktop */}
             <div className="hidden md:flex items-center gap-6">
               {LINKS.map((l) => (
                 <Link
@@ -55,18 +42,23 @@ export default function Navbar() {
                 </Link>
               ))}
 
-              {/* Contacto como scroll */}
-              <a
-                href="/#contacto"
-                onClick={goToContacto}
+              <Link
+                to={{ pathname: "/", hash: "#contacto" }}
                 className="px-1 py-2 border-b-2 border-transparent hover:border-white transition"
+                onClick={(e) => {
+                  setOpen(false);
+                  if (active === "/") {
+                    e.preventDefault();
+                    const el = document.getElementById("contacto");
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
               >
                 Contacto
-              </a>
+              </Link>
             </div>
           </div>
 
-          {/* Derecha: Íconos oficiales + botón Intranet */}
           <div className="hidden md:flex items-center gap-3">
             <a
               href="#"
@@ -95,13 +87,25 @@ export default function Navbar() {
               Intranet
             </a>
           </div>
+
+          <div className="md:hidden">
+            <button
+              type="button"
+              aria-label={open ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              onClick={() => setOpen((o) => !o)}
+              className="p-2 rounded-md ring-1 ring-white/15 hover:ring-white/30 transition"
+            >
+              {open ? <FiX size={24} /> : <FiMenu size={24} />}
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* Menú móvil (si lo usas) */}
       <div
         id="mobile-menu"
-        className={`md:hidden ${open ? "block" : "hidden"} border-t border-white/10`}
+        className={`md:hidden ${open ? "block" : "hidden"} border-t border-white/10 bg-[#0A2F4F]`}
       >
         <div className="px-3 py-3 space-y-1">
           {LINKS.map((l) => (
@@ -114,21 +118,38 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <a
-            href="/#contacto"
-            onClick={goToContacto}
+
+          <Link
+            to={{ pathname: "/", hash: "#contacto" }}
             className="block px-1 py-2 border-b-2 border-transparent hover:border-white transition"
+            onClick={(e) => {
+              setOpen(false);
+              if (active === "/") {
+                e.preventDefault();
+                const el = document.getElementById("contacto");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }}
           >
             Contacto
-          </a>
+          </Link>
 
-          {/* Íconos + Intranet en mobile */}
           <div className="pt-3 mt-2 border-t border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <a href="#" aria-label="Instagram" className="p-2 rounded-full ring-1 ring-white/15" onClick={(e)=>e.preventDefault()}>
+              <a
+                href="#"
+                aria-label="Instagram"
+                className="p-2 rounded-full ring-1 ring-white/15"
+                onClick={(e) => e.preventDefault()}
+              >
                 <FaInstagram size={20} />
               </a>
-              <a href="#" aria-label="LinkedIn" className="p-2 rounded-full ring-1 ring-white/15" onClick={(e)=>e.preventDefault()}>
+              <a
+                href="#"
+                aria-label="LinkedIn"
+                className="p-2 rounded-full ring-1 ring-white/15"
+                onClick={(e) => e.preventDefault()}
+              >
                 <FaLinkedinIn size={20} />
               </a>
             </div>
