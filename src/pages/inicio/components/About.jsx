@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import sistemImg from "../../../assets/sistemimgblue.png";
+import sistemImg from "../../../assets/mujervirtual.jpg";
+
 
 function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }) {
   const isOpen = activeId === id;
