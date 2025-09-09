@@ -6,14 +6,21 @@ export default function NetworkCanvas() {
 
   useEffect(() => {
     const el = containerRef.current;
+    if (!el) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     el.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -1, 1);
 
     let w = el.clientWidth, h = el.clientHeight;
+
     const resize = () => {
       w = el.clientWidth; h = el.clientHeight;
       renderer.setSize(w, h, false);
@@ -22,74 +29,80 @@ export default function NetworkCanvas() {
       camera.updateProjectionMatrix();
     };
     resize();
-    window.addEventListener("resize", resize);
+    const onResize = () => { resize(); };
+    window.addEventListener("resize", onResize);
 
-    // --- parámetros más visibles ---
-    const COUNT = 110;        // antes 90
-    const maxDist = 160;      // antes 140
+    const COUNT = prefersReduced ? 0 : (isMobile ? 45 : 110);
+    const maxDist = isMobile ? 90 : 160;
+    const speedScale = isMobile ? 0.22 : 0.3;
     const POINT_COLOR = 0x005587;
     const LINE_COLOR  = 0x005587;
 
-    // puntos
-    const positions = new Float32Array(COUNT * 3);
-    const vel = new Float32Array(COUNT * 2);
-    for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * w;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * h;
-      positions[i * 3 + 2] = 0;
-      vel[i * 2]     = (Math.random() - 0.5) * 0.3;
-      vel[i * 2 + 1] = (Math.random() - 0.5) * 0.3;
-    }
-    const ptsGeo = new THREE.BufferGeometry();
-    ptsGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const ptsMat = new THREE.PointsMaterial({
-      color: POINT_COLOR,
-      size: 3,                // antes 2
-      sizeAttenuation: false,
-      transparent: true,
-      opacity: 0.8,           // antes 0.65
-    });
-    const points = new THREE.Points(ptsGeo, ptsMat);
-    scene.add(points);
+    let points, lines, ptsGeo, lineGeo, ptsMat, lineMat, positions, vel, linesPos;
 
-    // líneas
-    const linesPos = new Float32Array(COUNT * COUNT * 6);
-    const lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute("position", new THREE.BufferAttribute(linesPos, 3));
-    lineGeo.setDrawRange(0, 0);
-    const lineMat = new THREE.LineBasicMaterial({
-      color: LINE_COLOR,
-      transparent: true,
-      opacity: 0.25,          // antes 0.15
-    });
-    const lines = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(lines);
+    if (COUNT > 0) {
+      positions = new Float32Array(COUNT * 3);
+      vel = new Float32Array(COUNT * 2);
+      for (let i = 0; i < COUNT; i++) {
+        positions[i * 3]     = (Math.random() - 0.5) * w;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * h;
+        positions[i * 3 + 2] = 0;
+        vel[i * 2]     = (Math.random() - 0.5) * speedScale;
+        vel[i * 2 + 1] = (Math.random() - 0.5) * speedScale;
+      }
+
+      ptsGeo = new THREE.BufferGeometry();
+      ptsGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      ptsMat = new THREE.PointsMaterial({
+        color: POINT_COLOR,
+        size: isMobile ? 2 : 3,
+        sizeAttenuation: false,
+        transparent: true,
+        opacity: 0.8,
+      });
+      points = new THREE.Points(ptsGeo, ptsMat);
+      scene.add(points);
+
+      linesPos = new Float32Array(COUNT * COUNT * 6);
+      lineGeo = new THREE.BufferGeometry();
+      lineGeo.setAttribute("position", new THREE.BufferAttribute(linesPos, 3));
+      lineGeo.setDrawRange(0, 0);
+      lineMat = new THREE.LineBasicMaterial({
+        color: LINE_COLOR,
+        transparent: true,
+        opacity: isMobile ? 0.18 : 0.25,
+      });
+      lines = new THREE.LineSegments(lineGeo, lineMat);
+      scene.add(lines);
+    }
 
     let raf;
     const animate = () => {
-      for (let i = 0; i < COUNT; i++) {
-        positions[i * 3]     += vel[i * 2];
-        positions[i * 3 + 1] += vel[i * 2 + 1];
-        if (positions[i * 3] < -w / 2 || positions[i * 3] >  w / 2) vel[i * 2]     *= -1;
-        if (positions[i * 3 + 1] < -h / 2 || positions[i * 3 + 1] >  h / 2) vel[i * 2 + 1] *= -1;
-      }
-      ptsGeo.attributes.position.needsUpdate = true;
+      if (COUNT > 0) {
+        for (let i = 0; i < COUNT; i++) {
+          positions[i * 3]     += vel[i * 2];
+          positions[i * 3 + 1] += vel[i * 2 + 1];
+          if (positions[i * 3] < -w / 2 || positions[i * 3] >  w / 2) vel[i * 2]     *= -1;
+          if (positions[i * 3 + 1] < -h / 2 || positions[i * 3 + 1] >  h / 2) vel[i * 2 + 1] *= -1;
+        }
+        ptsGeo.attributes.position.needsUpdate = true;
 
-      let ptr = 0;
-      for (let i = 0; i < COUNT; i++) {
-        const xi = positions[i * 3], yi = positions[i * 3 + 1];
-        for (let j = i + 1; j < COUNT; j++) {
-          const xj = positions[j * 3], yj = positions[j * 3 + 1];
-          const dx = xi - xj, dy = yi - yj;
-          const d = Math.hypot(dx, dy);
-          if (d < maxDist) {
-            linesPos[ptr++] = xi; linesPos[ptr++] = yi; linesPos[ptr++] = 0;
-            linesPos[ptr++] = xj; linesPos[ptr++] = yj; linesPos[ptr++] = 0;
+        let ptr = 0;
+        for (let i = 0; i < COUNT; i++) {
+          const xi = positions[i * 3], yi = positions[i * 3 + 1];
+          for (let j = i + 1; j < COUNT; j++) {
+            const xj = positions[j * 3], yj = positions[j * 3 + 1];
+            const dx = xi - xj, dy = yi - yj;
+            const d = dx*dx + dy*dy; // evitar sqrt (mejor perf)
+            if (d < maxDist * maxDist) {
+              linesPos[ptr++] = xi; linesPos[ptr++] = yi; linesPos[ptr++] = 0;
+              linesPos[ptr++] = xj; linesPos[ptr++] = yj; linesPos[ptr++] = 0;
+            }
           }
         }
+        lineGeo.setDrawRange(0, ptr / 3);
+        lineGeo.attributes.position.needsUpdate = true;
       }
-      lineGeo.setDrawRange(0, ptr / 3);
-      lineGeo.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
@@ -98,13 +111,17 @@ export default function NetworkCanvas() {
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-      ptsGeo.dispose(); lineGeo.dispose(); ptsMat.dispose(); lineMat.dispose();
+      window.removeEventListener("resize", onResize);
+      if (ptsGeo) ptsGeo.dispose();
+      if (lineGeo) lineGeo.dispose();
+      if (ptsMat) ptsMat.dispose();
+      if (lineMat) lineMat.dispose();
       renderer.dispose();
-      el.removeChild(renderer.domElement);
+      if (renderer.domElement && renderer.domElement.parentNode === el) {
+        el.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
-  // z-0 (no negativo) para que no quede debajo del fondo del section
-  return <div ref={containerRef} className="absolute inset-0 z-0 pointer-events-none" />;
+  return <div ref={containerRef} className="absolute inset-0 z-[1] pointer-events-none" />;
 }
