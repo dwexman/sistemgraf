@@ -11,7 +11,6 @@ import assistant from "../../../assets/seleccion.png";
 import climate from "../../../assets/nlp.png";
 import desarrollo from "../../../assets/gestiondesarrollo.png";
 
-
 function IconOrg() {
   return (
     <img
@@ -24,125 +23,28 @@ function IconOrg() {
     />
   );
 }
-
-function IconLearning() {
-  return (
-    <img
-      src={evaluation}
-      alt=""
-      aria-hidden="true"
-      className="w-22 h-22 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconVendors() {
-  return (
-    <img
-      src={proveedores}
-      alt=""
-      aria-hidden="true"
-      className="w-22 h-22 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconMaturity() {
-  return (
-    <img
-      src={analitica}
-      alt=""
-      aria-hidden="true"
-      className="w-24 h-24 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconStress() {
-  return (
-    <img
-      src={stress}
-      alt=""
-      aria-hidden="true"
-      className="w-26 h-26 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconCulture() {
-  return (
-    <img
-      src={powerBI}
-      alt=""
-      aria-hidden="true"
-      className="w-26 h-26 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconRecruiting() {
-  return (
-    <img
-      src={assistant}
-      alt=""
-      aria-hidden="true"
-      className="w-24 h-24 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconNLP() {
-  return (
-    <img
-      src={climate}
-      alt=""
-      aria-hidden="true"
-      className="w-26 h-26 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
-function IconPerformance() {
-  return (
-    <img
-      src={desarrollo}
-      alt=""
-      aria-hidden="true"
-      className="w-26 h-26 mb-4 object-contain"
-      loading="lazy"
-      decoding="async"
-    />
-  );
-}
-
+function IconLearning() { return <img src={evaluation} alt="" aria-hidden="true" className="w-22 h-22 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconVendors() { return <img src={proveedores} alt="" aria-hidden="true" className="w-22 h-22 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconMaturity() { return <img src={analitica} alt="" aria-hidden="true" className="w-24 h-24 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconStress() { return <img src={stress} alt="" aria-hidden="true" className="w-26 h-26 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconCulture() { return <img src={powerBI} alt="" aria-hidden="true" className="w-26 h-26 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconRecruiting() { return <img src={assistant} alt="" aria-hidden="true" className="w-24 h-24 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconNLP() { return <img src={climate} alt="" aria-hidden="true" className="w-26 h-26 mb-4 object-contain" loading="lazy" decoding="async" />; }
+function IconPerformance() { return <img src={desarrollo} alt="" aria-hidden="true" className="w-26 h-26 mb-4 object-contain" loading="lazy" decoding="async" />; }
 
 const servicios = [
   { id: 1, titulo: "Organigramas Inteligentes para Empresas", Icon: IconOrg },
   { id: 2, titulo: "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos", Icon: IconLearning },
   { id: 3, titulo: "Evaluación de Proveedores de Capacitación", Icon: IconVendors },
   { id: 4, titulo: "Psicometría: Madurez Organizacional en Analítica para Transformación Digital", Icon: IconMaturity },
-  { id: 5, titulo: "Psicometría para Estrés Laboral y Riesgos de Clima Organizacional", Icon: IconStress },
-  { id: 6, titulo: "Evaluación de Cultura Organizacional con BI y Psicometría", Icon: IconCulture },
+  { id: 5, titulo: "Evaluación de la Salud en el Trabajo: Estrés Laboral, Factores de Riesgo Psicosocial y Clima Organizacional", Icon: IconStress },
+  { id: 6, titulo: "Evaluación de Cultura Organizacional con BI", Icon: IconCulture },
   { id: 7, titulo: "Reclutamiento y Selección Inteligente con IA", Icon: IconRecruiting },
   { id: 8, titulo: "Evaluaciones de Clima Organizacional con NLP", Icon: IconNLP },
   { id: 9, titulo: "Gestión de Desempeño y Planes de Desarrollo Automáticos", Icon: IconPerformance },
 ];
 
-function Card({ titulo, Icon, delay = 0, dur = 2800 }) {
+function Card({ id, titulo, Icon, delay = 0, dur = 2800 }) {
   return (
     <div
       className="
@@ -157,25 +59,13 @@ function Card({ titulo, Icon, delay = 0, dur = 2800 }) {
     >
       <div className="flex flex-col items-center">
         {Icon ? <Icon /> : <IconOrg />}
-
-        <h3
-          className="
-    mb-4
-    leading-snug
-    text-center
-    whitespace-normal   
-    break-words         
-    hyphens-auto        
-    text-white
-  "
-        >
+        <h3 className="mb-4 leading-snug text-center whitespace-normal break-words hyphens-auto text-white">
           {titulo}
         </h3>
       </div>
 
-
       <Link
-        to="/servicios"
+        to={`/servicios#serv-${id}`}
         aria-label={`Leer más sobre ${titulo}`}
         className="
           mt-auto
@@ -194,7 +84,7 @@ function Card({ titulo, Icon, delay = 0, dur = 2800 }) {
   );
 }
 
-export default function Servicios() {
+export default function ServiciosSection() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -241,7 +131,7 @@ export default function Servicios() {
 
         <div className="flex flex-wrap justify-center gap-8 sm:gap-10">
           {servicios.map((s, i) => (
-            <Card key={s.id} titulo={s.titulo} Icon={s.Icon} delay={i * 200} dur={2800} />
+            <Card key={s.id} id={s.id} titulo={s.titulo} Icon={s.Icon} delay={i * 200} dur={2800} />
           ))}
         </div>
       </div>

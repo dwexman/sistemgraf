@@ -90,7 +90,7 @@ export default function Hero() {
                            text-base sm:text-lg md:text-2xl lg:text-[34px] xl:text-[38px]
                            leading-snug md:leading-[1.15]"
               >
-                A través de inteligencia de negocios, IA y análisis avanzado, potenciando el éxito
+                A través de inteligencia de negocios (BI), IA y análisis avanzado, potenciando el éxito
                 organizacional en la era digital.
               </p>
 
