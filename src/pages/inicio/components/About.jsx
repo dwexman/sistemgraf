@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import sistemImg from "../../../assets/mujervirtual.jpg";
 
-
 function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }) {
   const isOpen = activeId === id;
   return (
@@ -11,6 +10,7 @@ function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }
         bg-gradient-to-br from-[#005587] to-[#00A3E0] text-white
         shadow-sm hover:shadow-md transition-all duration-300
         ${isOpen ? "ring-1 ring-white/40" : ""}
+        w-full max-w-[520px] mx-auto md:max-w-none
       `}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -147,8 +147,9 @@ export default function About() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#005587]/5 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-          <div className={`transition-all duration-700 ease-out ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className="grid items-start md:items-center gap-10 md:grid-cols-2 md:gap-16 justify-items-center md:justify-items-stretch">
+          {/* Columna izquierda */}
+          <div className={`w-full max-w-[640px] mx-auto md:mx-0 transition-all duration-700 ease-out ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <p className="text-[#00A3E0] text-[20px] font-medium mb-4 tracking-wider uppercase">
               Acerca de
             </p>
@@ -159,7 +160,8 @@ export default function About() {
 
             <div className="h-1 w-16 bg-gradient-to-r from-[#00A3E0] to-[#005587] mb-6 rounded-full" />
 
-            <div className="space-y-4 mb-10">
+            {/* Cards centradas en mobile */}
+            <div className="space-y-4 mb-10 w-full max-w-[520px] mx-auto md:max-w-none">
               <AccordionItem id="vision" title="Visión" activeId={activeId} setActiveId={setActiveId} delay={0}>
                 <p>
                   Liderar la transformación digital estratégica, fortaleciendo una cultura organizacional
@@ -181,7 +183,7 @@ export default function About() {
             </div>
 
             <h3 className="text-[#0A2F4F] font-bold text-[24px] mb-4">Valores</h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[560px] mx-auto md:max-w-none">
               {valores.map((v, i) => (
                 <li
                   key={v.titulo}
@@ -213,8 +215,9 @@ export default function About() {
             </ul>
           </div>
 
+          {/* Columna derecha (imagen) */}
           <div className={`relative flex md:justify-end transition-all duration-800 ease-out delay-100 ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-            <div className="relative w-full max-w-[200px] md:max-w-[400px] mx-auto md:mx-0">
+            <div className="relative w-full max-w-[260px] sm:max-w-[320px] md:max-w-[400px] mx-auto md:mx-0">
               <div className="absolute -inset-2 md:-inset-4 border-2 border-[#00A3E0]/20 rounded-2xl rotate-3"></div>
               <div className="absolute -inset-3 md:-inset-6 border-2 border-[#005587]/10 rounded-2xl -rotate-2"></div>
               <div
@@ -237,7 +240,6 @@ export default function About() {
                 />
               </div>
 
-              
               <div className="absolute -bottom-3 -right-3 w-14 h-14 md:-bottom-4 md:-right-4 md:w-20 md:h-20 bg-[#00A3E0]/10 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <div className="w-3.5 h-3.5 md:w-4 md:h-4 bg-[#00A3E0] rounded-full"></div>
               </div>

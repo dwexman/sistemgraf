@@ -1,14 +1,144 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import NetworkCanvas from "./NetworkCanvas";
 
+// Animación de opacidad (fade)
+const FADE_MS = 250;
+// Límites y ajuste global de tiempo
+const MIN_MS = 3000;     // mínimo absoluto 3s
+const MAX_MS = 12000;    // máximo absoluto 12s
+const REDUCTION_MS = 3000; // restar 3s a lo calculado
+
+// Duración en base al largo del texto y dispositivo (y luego -3s)
+function msForSlide(title, subtitle) {
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(max-width: 640px)").matches;
+
+  const wpm = isMobile ? 140 : 180; // palabras por minuto aprox
+  const words = (title + " " + (subtitle || "")).trim().split(/\s+/).length || 1;
+  const readingSec = (words / wpm) * 60;
+  const buffer = isMobile ? 2.0 : 1.5; // respiro extra
+
+  let ms = (readingSec + buffer) * 1000;
+  ms = Math.max(MIN_MS, Math.min(MAX_MS, ms - REDUCTION_MS)); // aplicar -3s y clamp
+  return ms;
+}
+
 export default function Hero() {
+  // Slides: título (grande, bold) + subtítulo
+  const slides = useMemo(
+    () => [
+      {
+        title: "Impulsamos la transformación del capital humano",
+        subtitle:
+          "A través de inteligencia de negocios, IA y análisis avanzado, potenciando el éxito organizacional en la era digital.",
+      },
+      {
+        title: "Revoluciona la comprensión de tu organización",
+        subtitle:
+          "Impulsamos decisiones estratégicas con plataformas inteligentes, BI y análisis avanzado para medir estructura, cultura y clima, transformando el bienestar y el desempeño laboral.",
+      },
+      {
+        title: "Potencia el talento que impulsa tu éxito",
+        subtitle:
+          "Gracias a inteligencia artificial y evaluaciones automatizadas, medimos y optimizamos la formación, garantizando el desarrollo continuo y el retorno de inversión de tu equipo.",
+      },
+      {
+        title: "Prepara tu organización para el futuro digital",
+        subtitle:
+          "Automatizamos la gestión de desempeño y optimizamos la selección de talento con IA y analítica avanzada, logrando agilidad y un equipo de alto impacto en la era digital.",
+      },
+    ],
+    []
+  );
+
+  // Accesibilidad: respetar prefers-reduced-motion
+  const prefersReduced =
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const timeoutRef = useRef(null);
+  const isTransitioningRef = useRef(false); // evita doble transición
+
+  // Programa el siguiente cambio con duración por slide
+  useEffect(() => {
+    scheduleNext();
+    return () => clearTimeout(timeoutRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, slides, prefersReduced]);
+
+  function scheduleNext() {
+    clearTimeout(timeoutRef.current);
+    const s = slides[idx];
+    const duration = msForSlide(s.title, s.subtitle);
+
+    timeoutRef.current = setTimeout(() => {
+      nextSlide();
+    }, duration);
+  }
+
+  function nextSlide() {
+    if (isTransitioningRef.current) return;
+    isTransitioningRef.current = true;
+
+    if (prefersReduced) {
+      setIdx((i) => {
+        isTransitioningRef.current = false;
+        return (i + 1) % slides.length;
+      });
+      return;
+    }
+
+    setVisible(false);
+    setTimeout(() => {
+      setIdx((i) => (i + 1) % slides.length);
+      setVisible(true);
+      // un pequeño delay para liberar el lock
+      setTimeout(() => {
+        isTransitioningRef.current = false;
+      }, FADE_MS);
+    }, FADE_MS);
+  }
+
+  // Click en los dots para ir directo a un slide
+  function goToSlide(target) {
+    if (target === idx || isTransitioningRef.current) return;
+    clearTimeout(timeoutRef.current);
+    isTransitioningRef.current = true;
+
+    if (prefersReduced) {
+      setIdx(target);
+      isTransitioningRef.current = false;
+      return;
+    }
+
+    setVisible(false);
+    setTimeout(() => {
+      setIdx(target);
+      setVisible(true);
+      setTimeout(() => {
+        isTransitioningRef.current = false;
+      }, FADE_MS);
+    }, FADE_MS);
+  }
+
+  const current = slides[idx];
+
   return (
     <section
       id="inicio"
       className="relative overflow-hidden bg-[#EFEEF5] min-h-[90vh] md:min-h-screen flex items-center"
     >
+      {/* Animación: en mobile por encima del blob y debajo del texto (ver NetworkCanvas.jsx) */}
       <NetworkCanvas />
 
+      {/* BLOBS (z-10) */}
       <div className="absolute inset-0 z-10 overflow-hidden">
+        {/* Blob superior-izquierdo */}
         <div
           aria-hidden="true"
           className="
@@ -44,6 +174,7 @@ export default function Hero() {
           </svg>
         </div>
 
+        {/* Blob inferior-derecho */}
         <div
           aria-hidden="true"
           className="
@@ -63,9 +194,11 @@ export default function Hero() {
         />
       </div>
 
+      {/* CONTENIDO (z-20) */}
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
         <div className="w-full max-w-4xl md:text-left md:ml-[5%] lg:ml-[8%] xl:ml-[10%] mx-auto">
           <div className="relative md:static">
+            {/* Cajita translúcida SOLO mobile detrás del bloque de texto */}
             <div
               aria-hidden="true"
               className="
@@ -77,23 +210,38 @@ export default function Hero() {
               "
             />
 
-            <div className="relative text-center md:text-left">
-              <h1 className="text-[#0A2F4F] font-bold tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-                Impulsamos la{" "}
-                <span className="bg-gradient-to-r from-[#005587] to-[#00A3E0] bg-clip-text text-transparent">
-                  transformación del capital humano
-                </span>
+            {/* Texto rotatorio */}
+            <div className="relative text-center md:text-left" aria-live="polite">
+              {/* Título */}
+              <h1
+                className={`
+                  text-[#0A2F4F] font-bold tracking-tight leading-tight
+                  text-3xl sm:text-4xl md:text-5xl lg:text-6xl
+                  transition-opacity ${prefersReduced ? "" : "duration-200"}
+                  ${visible ? "opacity-100" : "opacity-0"}
+                `}
+                style={{ transitionDuration: prefersReduced ? "0ms" : `${FADE_MS}ms` }}
+                key={`title-${idx}`}
+              >
+                {current.title}
               </h1>
 
+              {/* Subtítulo */}
               <p
-                className="mt-4 sm:mt-5 md:mt-6 text-[#0A2F4F]/90 max-w-4xl
-                           text-base sm:text-lg md:text-2xl lg:text-[34px] xl:text-[38px]
-                           leading-snug md:leading-[1.15]"
+                className={`
+                  mt-4 sm:mt-5 md:mt-6 text-[#0A2F4F]/90 max-w-4xl
+                  text-base sm:text-lg md:text-2xl lg:text-[34px] xl:text-[38px]
+                  leading-snug md:leading-[1.15]
+                  transition-opacity ${prefersReduced ? "" : "duration-200"}
+                  ${visible ? "opacity-100" : "opacity-0"}
+                `}
+                style={{ transitionDuration: prefersReduced ? "0ms" : `${FADE_MS}ms` }}
+                key={`subtitle-${idx}`}
               >
-                A través de inteligencia de negocios (BI), IA y análisis avanzado, potenciando el éxito
-                organizacional en la era digital.
+                {current.subtitle}
               </p>
 
+              {/* CTA */}
               <div className="mt-6 md:mt-10 flex justify-center md:justify-start">
                 <a
                   href="#servicios"
@@ -112,6 +260,28 @@ export default function Hero() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                   </svg>
                 </a>
+              </div>
+
+              {/* Dots clickeables */}
+              <div className="mt-4 md:mt-6 flex items-center justify-center md:justify-start gap-2">
+                {slides.map((_, i) => {
+                  const active = i === idx;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => goToSlide(i)}
+                      aria-label={`Ir al slide ${i + 1}`}
+                      aria-current={active ? "true" : "false"}
+                      className={`
+                        rounded-full outline-none
+                        transition-all duration-300
+                        ${active ? "w-3 h-3 bg-[#005587]" : "w-2.5 h-2.5 bg-[#0A2F4F]/30 hover:bg-[#0A2F4F]/50"}
+                        focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#005587]
+                      `}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -9,7 +9,6 @@ export default function NetworkCanvas() {
     if (!el) return;
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     const isMobile = window.matchMedia("(max-width: 640px)").matches;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -32,9 +31,10 @@ export default function NetworkCanvas() {
     const onResize = () => { resize(); };
     window.addEventListener("resize", onResize);
 
-    const COUNT = prefersReduced ? 0 : (isMobile ? 45 : 110);
-    const maxDist = isMobile ? 90 : 160;
-    const speedScale = isMobile ? 0.22 : 0.3;
+    // Ajustes para llenar mejor la esquina sup. izquierda en mobile
+    const COUNT = prefersReduced ? 0 : (isMobile ? 70 : 110);
+    const maxDist = isMobile ? 100 : 160;
+    const speedScale = isMobile ? 0.24 : 0.3;
     const POINT_COLOR = 0x005587;
     const LINE_COLOR  = 0x005587;
 
@@ -70,7 +70,7 @@ export default function NetworkCanvas() {
       lineMat = new THREE.LineBasicMaterial({
         color: LINE_COLOR,
         transparent: true,
-        opacity: isMobile ? 0.18 : 0.25,
+        opacity: isMobile ? 0.2 : 0.25,
       });
       lines = new THREE.LineSegments(lineGeo, lineMat);
       scene.add(lines);
@@ -93,8 +93,8 @@ export default function NetworkCanvas() {
           for (let j = i + 1; j < COUNT; j++) {
             const xj = positions[j * 3], yj = positions[j * 3 + 1];
             const dx = xi - xj, dy = yi - yj;
-            const d = dx*dx + dy*dy; // evitar sqrt (mejor perf)
-            if (d < maxDist * maxDist) {
+            const d2 = dx * dx + dy * dy; // distancia al cuadrado (perf)
+            if (d2 < maxDist * maxDist) {
               linesPos[ptr++] = xi; linesPos[ptr++] = yi; linesPos[ptr++] = 0;
               linesPos[ptr++] = xj; linesPos[ptr++] = yj; linesPos[ptr++] = 0;
             }
@@ -123,5 +123,15 @@ export default function NetworkCanvas() {
     };
   }, []);
 
-  return <div ref={containerRef} className="absolute inset-0 z-[1] pointer-events-none" />;
+  // Z-index responsivo + escala mayor SOLO en mobile
+  return (
+    <div
+      ref={containerRef}
+      className="
+        absolute inset-0 pointer-events-none
+        z-[15] md:z-[1]
+        scale-110 md:scale-100 origin-top-left
+      "
+    />
+  );
 }

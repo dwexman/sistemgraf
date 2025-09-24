@@ -96,7 +96,7 @@ export default function Contacto() {
         }
         .perimeter-base { stroke: rgba(255,255,255,0.25); stroke-width: 1.5; fill: none; }
 
-        /* ===== Subrayado degradé animado (debajo del texto, una sola línea) ===== */
+        /* ===== Subrayado degradé animado (debajo del texto, una sola línea que cubre todo el bloque) ===== */
         @keyframes underlineGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         @keyframes shimmerSweep {
           0% { transform: translateX(-120%); opacity: 0; }
@@ -106,13 +106,13 @@ export default function Contacto() {
         .underline-wrap {
           position: relative;
           display: inline-block;
-          padding: 0 .08em .26em;    /* espacio para que la barra no toque el texto */
-          white-space: nowrap;       /* TODO en una línea */
+          padding: 0 .08em .26em;
+          white-space: normal;     /* ← permite varias líneas */
         }
         .u-text { position: relative; z-index: 2; } /* texto por encima */
         .underline-bar {
           position: absolute; left: 0; right: 0; bottom: 0;
-          height: .16em;              /* barra más fina */
+          height: .16em;
           border-radius: .22em;
           background: linear-gradient(90deg,#00A3E0 0%, #69A9D1 50%, #005587 100%);
           transform-origin: 0 50%; transform: scaleX(0);
@@ -132,10 +132,6 @@ export default function Contacto() {
         /* Flotación sutil del bloque de texto */
         @keyframes floaty { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-2px); } }
         .floaty { animation: floaty 4s ease-in-out infinite; }
-
-        /* Ocultar scrollbar horizontal cuando aparezca por nowrap */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       <div className="w-full relative z-10">
@@ -144,12 +140,13 @@ export default function Contacto() {
             ¿Listo para <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#005587] to-[#00A3E0]">potenciar</span> el futuro de tu empresa?
           </h3>
 
-          <p className="mt-3 sm:mt-4 text-[#0A2F4F] font-semibold leading-snug
-                         text-[18px] sm:text-[20px] md:text-[22px]
-                         overflow-x-auto no-scrollbar">
+          {/* ← Texto en 3 líneas fijas */}
+          <p className="mt-3 sm:mt-4 text-[#0A2F4F] font-semibold leading-snug text-[18px] sm:text-[20px] md:text-[22px]">
             <span className="underline-wrap">
               <span className="u-text">
-                Elige la modalidad que más se ajusta a tu estrategia y comienza a transformar tu capital humano.
+                <span className="block">Elige la modalidad que más se ajusta</span>
+                <span className="block">a tu estrategia y comienza a</span>
+                <span className="block">transformar tu capital humano.</span>
               </span>
               <span className="underline-bar"></span>
               <span className="underline-shimmer"></span>
