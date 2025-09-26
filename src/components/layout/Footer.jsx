@@ -1,5 +1,5 @@
 import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import logo from "../../assets/logowhite.png"; // misma ruta que en tu Navbar
+import logo from "../../assets/transparentwhitelogo.png"; // misma ruta que en tu Navbar
 
 export default function Footer() {
   const year = new Date().getFullYear();
