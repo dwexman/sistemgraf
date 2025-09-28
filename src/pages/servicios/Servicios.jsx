@@ -83,6 +83,67 @@ const servicios = [
   },
 ];
 
+const SERVICE_CATEGORY = {
+  1: "diag", 6: "diag", 8: "diag", 5: "diag",
+  2: "cap", 3: "cap", 9: "cap",
+  4: "td",
+  7: "seleccion",
+};
+
+const CATEGORIES = [
+  {
+    key: "diag",
+    titulo: "Diagnóstico Organizacional",
+    descripcion:
+      "Identifica la situación actual de tu organización (estructura, cultura, clima, salud en el trabajo) para tomar decisiones estratégicas.",
+  },
+  {
+    key: "cap",
+    titulo: "Desarrollo del Talento y Capacitación",
+    descripcion:
+      "Mide la efectividad de la formación para asegurar retorno de inversión y mejorar continuamente el desarrollo del talento.",
+  },
+  {
+    key: "td",
+    titulo: "Transformación Digital y Analítica",
+    descripcion:
+      "Prepara a tu organización para el uso avanzado de datos y automatiza la gestión de desempeño para mayor agilidad.",
+  },
+  {
+    key: "seleccion",
+    titulo: "Atracción y Selección de Talento",
+    descripcion:
+      "Optimiza el filtrado y selección de candidatos, reduciendo tiempos y costos y mejorando la calidad de las contrataciones.",
+  },
+];
+
+const CATEGORY_COLORS = {
+  diag: {
+    cardBg: "linear-gradient(180deg,#002E49 0%,#005587 100%)",
+    ctaBg:  "linear-gradient(90deg,#00A3E0 0%,#69A9D1 100%)",
+    headerClosed: "linear-gradient(135deg,#003858 0%,#0073A3 100%)",
+    headerOpen:   "linear-gradient(135deg,rgba(0,56,88,0.72) 0%,rgba(0,115,163,0.36) 100%)",
+  },
+  cap: {
+    cardBg: "linear-gradient(180deg,#0A4D7A 0%,#117DB1 100%)",
+    ctaBg:  "linear-gradient(90deg,#1AA6E0 0%,#7ECBF0 100%)",
+    headerClosed: "linear-gradient(135deg,#0B5688 0%,#1590C8 100%)",
+    headerOpen:   "linear-gradient(135deg,rgba(11,86,136,0.70) 0%,rgba(21,144,200,0.34) 100%)",
+  },
+  td: {
+    cardBg: "linear-gradient(180deg,#123B6B 0%,#1E63A7 100%)",
+    ctaBg:  "linear-gradient(90deg,#2D89E5 0%,#8AB9F5 100%)",
+    headerClosed: "linear-gradient(135deg,#14457C 0%,#2475C4 100%)",
+    headerOpen:   "linear-gradient(135deg,rgba(20,69,124,0.70) 0%,rgba(36,117,196,0.34) 100%)",
+  },
+  seleccion: {
+    cardBg: "linear-gradient(180deg,#1B4F91 0%,#4FA0E2 100%)",
+    ctaBg:  "linear-gradient(90deg,#58A9EA 0%,#A7D3F8 100%)",
+    headerClosed: "linear-gradient(135deg,#1E5AA5 0%,#64B0EC 100%)",
+    headerOpen:   "linear-gradient(135deg,rgba(30,90,165,0.68) 0%,rgba(100,176,236,0.32) 100%)",
+  },
+};
+
 function IconBadge({ src, alt }) {
   return (
     <div
@@ -105,21 +166,20 @@ function IconBadge({ src, alt }) {
   );
 }
 
-function Card({ id, titulo, descripcion, icon, visible, isFocused, delay = 0 }) {
+function Card({ id, titulo, descripcion, icon, visible, isFocused, delay = 0, palette }) {
   return (
     <div
       id={`serv-${id}`}
       className={[
         "group relative rounded-[24px] p-7 text-white",
-        "bg-gradient-to-b from-[#004366] to-[#002E49]",
         "shadow-[0_18px_28px_rgba(0,0,0,0.25)] transition-all duration-500 will-change-transform",
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3",
         "hover:scale-[1.02] hover:shadow-[0_22px_34px_rgba(0,0,0,0.35)]",
         "text-center",
-        "scroll-mt-20", 
+        "scroll-mt-20",
         isFocused ? "ring-4 ring-[#00A3E0]/70 shadow-[0_0_0_6px_rgba(0,163,224,0.2)]" : ""
       ].join(" ")}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{ transitionDelay: `${delay}ms`, background: palette.cardBg }}
     >
       <div className="flex flex-col items-center">
         <IconBadge src={icon || organigrama} alt={`${titulo} - icono`} />
@@ -132,6 +192,62 @@ function Card({ id, titulo, descripcion, icon, visible, isFocused, delay = 0 }) 
         </p>
       </div>
       <div className="pointer-events-none absolute inset-0 rounded-[24px] ring-1 ring-white/10 group-hover:ring-white/20 transition" />
+    </div>
+  );
+}
+
+function CategoryAccordion({ cat, palette, active, setActive, children }) {
+  const isOpen = active === cat.key;
+  return (
+    <div
+      className={[
+        "group rounded-2xl text-white",
+        "shadow-sm transition-all duration-300",
+        isOpen ? "ring-1 ring-white/30" : "hover:shadow-md",
+      ].join(" ")}
+      style={{
+        background: isOpen ? palette.headerOpen : palette.headerClosed,
+        backdropFilter: isOpen ? "saturate(140%) blur(1px)" : "none",
+      }}
+    >
+      <button
+        onClick={() => setActive(isOpen ? null : cat.key)}
+        aria-expanded={isOpen}
+        aria-controls={`${cat.key}-content`}
+        className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
+      >
+        <div>
+          <span className="block font-extrabold text-[20px] md:text-[22px] leading-tight">{cat.titulo}</span>
+          <span className="block text-white/95 text-[14px] md:text-[15px] mt-1">{cat.descripcion}</span>
+        </div>
+
+        <span
+          className={[
+            "inline-flex h-9 w-9 items-center justify-center rounded-full",
+            "border border-white/25 bg-white text-[#0A2F4F]",
+            "transition-transform duration-300",
+            isOpen ? "rotate-180" : "",
+          ].join(" ")}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <div
+        id={`${cat.key}-content`}
+        className={[
+          "grid overflow-hidden transition-[grid-template-rows] duration-500 ease-out",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        ].join(" ")}
+      >
+        <div className="min-h-0">
+          <div className="px-5 md:px-6 pb-6">
+            {children}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -199,7 +315,8 @@ function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }
 export default function Servicios() {
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState(null); 
+  const [activeCat, setActiveCat] = useState("diag"); 
 
   const [focusedId, setFocusedId] = useState(null);
   const { hash } = useLocation();
@@ -231,10 +348,18 @@ export default function Servicios() {
         if (!Number.isNaN(num)) {
           setFocusedId(num);
           setTimeout(() => setFocusedId(null), 2500);
+          const catKey = SERVICE_CATEGORY[num];
+          if (catKey) setActiveCat(catKey);
         }
       });
     }
   }, [hash]);
+
+  const servicesByCategory = CATEGORIES.map((cat) => ({
+    cat,
+    palette: CATEGORY_COLORS[cat.key],
+    items: servicios.filter((s) => SERVICE_CATEGORY[s.id] === cat.key),
+  }));
 
   return (
     <section
@@ -305,18 +430,46 @@ export default function Servicios() {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {servicios.map((s, i) => (
-            <Card
-              key={s.id}
-              id={s.id}
-              titulo={s.titulo}
-              descripcion={s.descripcion}
-              icon={ICONS[s.id]}
-              visible={visible}
-              isFocused={focusedId === s.id}
-              delay={i * 120}
-            />
+        <div className="mt-10 space-y-6">
+          {servicesByCategory.map(({ cat, palette, items }) => (
+            <CategoryAccordion
+              key={cat.key}
+              cat={cat}
+              palette={palette}
+              active={activeCat}
+              setActive={setActiveCat}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                {items.length === 1 ? (
+                  <div className="lg:col-start-2 justify-self-center w-full">
+                    <Card
+                      id={items[0].id}
+                      titulo={items[0].titulo}
+                      descripcion={items[0].descripcion}
+                      icon={ICONS[items[0].id]}
+                      visible={visible}
+                      isFocused={false}
+                      delay={0}
+                      palette={palette}
+                    />
+                  </div>
+                ) : (
+                  items.map((s, i) => (
+                    <Card
+                      key={s.id}
+                      id={s.id}
+                      titulo={s.titulo}
+                      descripcion={s.descripcion}
+                      icon={ICONS[s.id]}
+                      visible={visible}
+                      isFocused={false}
+                      delay={i * 120}
+                      palette={palette}
+                    />
+                  ))
+                )}
+              </div>
+            </CategoryAccordion>
           ))}
         </div>
 
