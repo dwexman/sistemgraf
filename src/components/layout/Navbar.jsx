@@ -7,6 +7,7 @@ import logo from "../../assets/logowhite.png";
 const LINKS = [
   { id: "inicio", label: "Inicio", to: "/" },
   { id: "servicios", label: "Servicios", to: "/servicios" },
+  { id: "equipo", label: "Equipo", to: "/equipo" },
   // { id: "blog", label: "Blog", to: "/blog" }, 
 ];
 

@@ -1,32 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import NetworkCanvas from "./NetworkCanvas";
 
-// Animación de opacidad (fade)
 const FADE_MS = 250;
-// Límites y ajuste global de tiempo
-const MIN_MS = 3000;     // mínimo absoluto 3s
-const MAX_MS = 12000;    // máximo absoluto 12s
-const REDUCTION_MS = 3000; // restar 3s a lo calculado
+const MIN_MS = 3000;     
+const MAX_MS = 12000;    
+const REDUCTION_MS = 3000; 
 
-// Duración en base al largo del texto y dispositivo (y luego -3s)
 function msForSlide(title, subtitle) {
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia &&
     window.matchMedia("(max-width: 640px)").matches;
 
-  const wpm = isMobile ? 140 : 180; // palabras por minuto aprox
+  const wpm = isMobile ? 140 : 180; 
   const words = (title + " " + (subtitle || "")).trim().split(/\s+/).length || 1;
   const readingSec = (words / wpm) * 60;
-  const buffer = isMobile ? 2.0 : 1.5; // respiro extra
+  const buffer = isMobile ? 2.0 : 1.5; 
 
   let ms = (readingSec + buffer) * 1000;
-  ms = Math.max(MIN_MS, Math.min(MAX_MS, ms - REDUCTION_MS)); // aplicar -3s y clamp
+  ms = Math.max(MIN_MS, Math.min(MAX_MS, ms - REDUCTION_MS)); 
   return ms;
 }
 
 export default function Hero() {
-  // Slides: título (grande, bold) + subtítulo
   const slides = useMemo(
     () => [
       {
@@ -53,7 +49,6 @@ export default function Hero() {
     []
   );
 
-  // Accesibilidad: respetar prefers-reduced-motion
   const prefersReduced =
     typeof window !== "undefined" &&
     window.matchMedia &&
@@ -62,13 +57,11 @@ export default function Hero() {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
   const timeoutRef = useRef(null);
-  const isTransitioningRef = useRef(false); // evita doble transición
+  const isTransitioningRef = useRef(false); 
 
-  // Programa el siguiente cambio con duración por slide
   useEffect(() => {
     scheduleNext();
     return () => clearTimeout(timeoutRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, slides, prefersReduced]);
 
   function scheduleNext() {
@@ -97,14 +90,12 @@ export default function Hero() {
     setTimeout(() => {
       setIdx((i) => (i + 1) % slides.length);
       setVisible(true);
-      // un pequeño delay para liberar el lock
       setTimeout(() => {
         isTransitioningRef.current = false;
       }, FADE_MS);
     }, FADE_MS);
   }
 
-  // Click en los dots para ir directo a un slide
   function goToSlide(target) {
     if (target === idx || isTransitioningRef.current) return;
     clearTimeout(timeoutRef.current);
@@ -133,12 +124,9 @@ export default function Hero() {
       id="inicio"
       className="relative overflow-hidden bg-[#EFEEF5] min-h-[90vh] md:min-h-screen flex items-center"
     >
-      {/* Animación: en mobile por encima del blob y debajo del texto (ver NetworkCanvas.jsx) */}
       <NetworkCanvas />
 
-      {/* BLOBS (z-10) */}
       <div className="absolute inset-0 z-10 overflow-hidden">
-        {/* Blob superior-izquierdo */}
         <div
           aria-hidden="true"
           className="
@@ -174,7 +162,6 @@ export default function Hero() {
           </svg>
         </div>
 
-        {/* Blob inferior-derecho */}
         <div
           aria-hidden="true"
           className="
@@ -194,11 +181,9 @@ export default function Hero() {
         />
       </div>
 
-      {/* CONTENIDO (z-20) */}
       <div className="relative z-20 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
         <div className="w-full max-w-4xl md:text-left md:ml-[5%] lg:ml-[8%] xl:ml-[10%] mx-auto">
           <div className="relative md:static">
-            {/* Cajita translúcida SOLO mobile detrás del bloque de texto */}
             <div
               aria-hidden="true"
               className="
@@ -210,9 +195,7 @@ export default function Hero() {
               "
             />
 
-            {/* Texto rotatorio */}
             <div className="relative text-center md:text-left" aria-live="polite">
-              {/* Título */}
               <h1
                 className={`
                   text-[#0A2F4F] font-bold tracking-tight leading-tight
@@ -226,7 +209,6 @@ export default function Hero() {
                 {current.title}
               </h1>
 
-              {/* Subtítulo */}
               <p
                 className={`
                   mt-4 sm:mt-5 md:mt-6 text-[#0A2F4F]/90 max-w-4xl
@@ -241,7 +223,6 @@ export default function Hero() {
                 {current.subtitle}
               </p>
 
-              {/* CTA */}
               <div className="mt-6 md:mt-10 flex justify-center md:justify-start">
                 <a
                   href="#servicios"
@@ -262,7 +243,6 @@ export default function Hero() {
                 </a>
               </div>
 
-              {/* Dots clickeables */}
               <div className="mt-4 md:mt-6 flex items-center justify-center md:justify-start gap-2">
                 {slides.map((_, i) => {
                   const active = i === idx;
