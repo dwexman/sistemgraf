@@ -38,7 +38,7 @@ export default function Footer() {
 
             {/* Fila 2: Teléfono */}
             <a
-              href="tel:+56912345678"
+              href="tel:+56941442980"
               className="inline-flex items-center gap-3 text-sm opacity-95 hover:opacity-100 transition"
             >
               <span className="p-2 rounded-full ring-1 ring-white/20">
