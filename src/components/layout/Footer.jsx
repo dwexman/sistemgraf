@@ -45,7 +45,7 @@ export default function Footer() {
                 <FiPhone size={18} />
               </span>
               <span className="underline-offset-4 hover:underline select-all">
-                +56 9 1234 5678
+                +56 9 4144 2980
               </span>
             </a>
 
