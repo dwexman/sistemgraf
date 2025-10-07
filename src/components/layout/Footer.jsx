@@ -63,16 +63,17 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* DERECHA: Logo en óvalo (más largo, NO más alto) */}
+          {/* DERECHA: Logo en óvalo grande con borde visible */}
           <div className="flex md:justify-end justify-center items-center">
             <div
               className="
                 group relative grid place-items-center rounded-full
-                ring-4 ring-white/40 hover:ring-white/60 transition
+                overflow-hidden
+                ring-6 ring-white/60 hover:ring-white transition
+                ring-offset-2 ring-offset-[#0A2F4F]
                 bg-white/5
-                /* Alto controlado; ancho mayor para alargar */
-                h-[160px] sm:h-[170px] md:h-[180px]
-                w-[320px] sm:w-[380px] md:w-[460px] lg:w-[520px]
+                h-[200px] sm:h-[220px] md:h-[240px]
+                w-[380px] sm:w-[460px] md:w-[540px] lg:w-[600px]
                 shadow-[0_10px_30px_rgba(0,0,0,0.25)]
               "
               style={{
@@ -80,15 +81,14 @@ export default function Footer() {
                   "inset 0 0 60px rgba(255,255,255,0.06), 0 10px 30px rgba(0,0,0,0.25)",
               }}
             >
-              {/* aro interior para profundidad */}
-              <div className="absolute inset-3 rounded-full ring-1 ring-white/25" />
+              <div className="absolute inset-4 rounded-full ring-1 ring-white/25" />
               <img
                 src={logo2}
                 alt="Sistemgraf"
                 className="
-                  h-[60%] w-auto
+                  max-h-[68%] max-w-[78%] object-contain
                   drop-shadow
-                  transition-transform duration-500 group-hover:scale-105
+                  transition-transform duration-500 group-hover:scale-[1.03]
                 "
               />
             </div>

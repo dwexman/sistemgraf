@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import sistemImg from "../../../assets/mujervirtual.jpg";
+import img1 from "../../../assets/img1.png";
+import img2 from "../../../assets/img2.png";
 
 function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }) {
   const isOpen = activeId === id;
@@ -57,7 +58,7 @@ function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }
 
 export default function About() {
   const sectionRef = useRef(null);
-  const imgRef = useRef(null);
+  const imgWrapperRef = useRef(null);
   const [show, setShow] = useState(false);
   const [activeId, setActiveId] = useState("vision");
 
@@ -71,15 +72,16 @@ export default function About() {
     return () => io.disconnect();
   }, []);
 
+  // parallax suave
   useEffect(() => {
     const onScroll = () => {
       const sec = sectionRef.current;
-      const img = imgRef.current;
-      if (!sec || !img) return;
+      const wrap = imgWrapperRef.current;
+      if (!sec || !wrap) return;
       const r = sec.getBoundingClientRect();
       const centerDelta = r.top + r.height / 2 - window.innerHeight / 2;
       const shift = Math.max(-24, Math.min(24, -centerDelta * 0.02));
-      img.style.transform = `translateY(${shift}px)`;
+      wrap.style.transform = `translateY(${shift}px)`;
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -215,11 +217,13 @@ export default function About() {
             </ul>
           </div>
 
-          {/* Columna derecha (imagen) */}
+          {/* Columna derecha (STACK agrandado) */}
           <div className={`relative flex md:justify-end transition-all duration-800 ease-out delay-100 ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-            <div className="relative w-full max-w-[260px] sm:max-w-[320px] md:max-w-[400px] mx-auto md:mx-0">
+            <div className="relative w-full max-w-[380px] sm:max-w-[480px] md:max-w-[600px] lg:max-w-[680px] mx-auto md:mx-0">
+              {/* marcos inclinados */}
               <div className="absolute -inset-2 md:-inset-4 border-2 border-[#00A3E0]/20 rounded-2xl rotate-3"></div>
               <div className="absolute -inset-3 md:-inset-6 border-2 border-[#005587]/10 rounded-2xl -rotate-2"></div>
+              {/* glow */}
               <div
                 className="absolute inset-0 -z-10 scale-110 opacity-70"
                 style={{
@@ -229,17 +233,31 @@ export default function About() {
                 }}
               />
 
-              <div className="relative rounded-xl overflow-hidden shadow-xl">
-                <img
-                  ref={imgRef}
-                  src={sistemImg}
-                  alt="Ilustración: analítica y equipo de trabajo"
-                  className="w-full h-auto object-contain select-none will-change-transform transition-transform duration-300 hover:scale-105"
-                  loading="lazy"
-                  decoding="async"
-                />
+              {/* wrapper con parallax */}
+              <div ref={imgWrapperRef} className="relative rounded-2xl overflow-hidden">
+                <div className="space-y-6">
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white/5">
+                    <img
+                      src={img1}
+                      alt="Visual 1"
+                      className="w-full h-auto object-contain"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white/5">
+                    <img
+                      src={img2}
+                      alt="Visual 2"
+                      className="w-full h-auto object-contain"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
               </div>
 
+              {/* burbuja decorativa */}
               <div className="absolute -bottom-3 -right-3 w-14 h-14 md:-bottom-4 md:-right-4 md:w-20 md:h-20 bg-[#00A3E0]/10 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <div className="w-3.5 h-3.5 md:w-4 md:h-4 bg-[#00A3E0] rounded-full"></div>
               </div>
