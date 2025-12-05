@@ -14,26 +14,15 @@ const team = [
         role: "Gerente General",
         bio: "Doctor en derecho y administración de empresas, Ingeniero comercial e Ingeniero informático, con maestría en gestión mención contabilidad y finanzas. Docente de la Universidad Técnica Federico Santa María y Universidad Viña del Mar.",
     },
-    { name: "Hernán Nuñez", role: "Especialista en Administración", bio: "Administrador público." },
+    {
+        name: "Hernán Nuñez",
+        role: "Especialista en Administración",
+        bio: "Administrador público.",
+    },
     {
         name: "Alexis La Cruz",
         role: "Especialista en Gestión de Talento",
         bio: "Psicólogo, especialista en análisis de datos en ciencias sociales y en el desarrollo de instrumentos psicométricos.",
-    },
-    {
-        name: "Paula Marti",
-        role: "Especialista en Desarrollo de Sistemas",
-        bio: "Ingeniero de ejecución informática con experiencia en el área de operaciones, administración, desarrollo de sistemas y gestión de la información.",
-    },
-    {
-        name: "Ferndols Alvarado",
-        role: "Jefe de Proyectos TI",
-        bio: "Contador auditor con maestría en tecnologías de la información.",
-    },
-    {
-        name: "Jaime Olivares",
-        role: "Soporte TI",
-        bio: "Ingeniero en electricidad e Ingeniero civil industrial.",
     },
 ];
 
@@ -65,23 +54,35 @@ function Pill({ children }) {
 
 function MemberCard({ person }) {
     return (
-        <article className="group relative rounded-2xl border border-white/30 bg-white/85 backdrop-blur-sm p-5 shadow-[0_10px_28px_rgba(0,0,0,0.08)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(0,0,0,0.12)]">
-            <div className="flex items-start gap-4">
-                <div
-                    className="
-            grid place-items-center shrink-0 w-16 h-16 rounded-2xl text-white text-xl font-extrabold
-            bg-[linear-gradient(135deg,#005587,#00A3E0)]
-            shadow-[0_8px_18px_rgba(0,0,0,0.2)]
-          "
-                >
-                    {initials(person.name)}
+        <article className="group relative overflow-hidden rounded-2xl border border-white/30 bg-white/90 p-5 shadow-[0_10px_28px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+            {/* Glow en hover */}
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_top,#00A3E0_0,transparent_55%),radial-gradient(circle_at_bottom,#005587_0,transparent_55%)] mix-blend-soft-light"
+            />
+
+            <div className="relative">
+                {/* Badge Socio fundador */}
+                <span className="inline-flex items-center rounded-full bg-[#005587]/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#005587]">
+                    Socio fundador
+                </span>
+
+                {/* Cargo grande con degradado + subrayado animado */}
+                <div className="mt-3 inline-block">
+                    <h3 className="relative text-xl sm:text-2xl font-black leading-tight">
+                        <span className="bg-gradient-to-r from-[#005587] via-[#00A3E0] to-[#00C0FF] bg-clip-text text-transparent">
+                            {person.role}
+                        </span>
+                        {/* Línea que se anima en hover */}
+                        <span className="absolute -bottom-1 left-0 h-[3px] w-full origin-left scale-x-0 bg-gradient-to-r from-[#005587] via-[#00A3E0] to-[#00C0FF] transition-transform duration-300 group-hover:scale-x-100" />
+                    </h3>
                 </div>
-                <div>
-                    <h3 className="text-[#0A2F4F] font-extrabold text-lg leading-tight">{person.name}</h3>
-                    <p className="mt-0.5 text-[#0A2F4F]/80 font-semibold">{person.role}</p>
-                </div>
+
+                {/* Bio */}
+                <p className="mt-4 text-sm sm:text-[15px] leading-relaxed text-[#0A2F4F]/90">
+                    {person.bio}
+                </p>
             </div>
-            <p className="mt-3 text-[#0A2F4F]/90 leading-relaxed">{person.bio}</p>
         </article>
     );
 }
@@ -142,21 +143,19 @@ export default function Equipo() {
                     {/* Col derecha: fondo animado atrás de las cards */}
                     <main className="lg:col-span-7">
                         <div className="relative">
-                            {/* 1) Canvas como fondo (sin -z), siempre visible (sin xs:) */}
-                            <TeamHelixCanvas
-                                className="absolute inset-0 z-0 pointer-events-none"
-                            />
+                            {/* 1) Canvas como fondo */}
+                            <TeamHelixCanvas className="absolute inset-0 z-0 pointer-events-none" />
 
-                            {/* 2) (Opcional) Desvanecido para que no invada la izquierda */}
+                            {/* 2) Desvanecido para que no invada la izquierda */}
                             <div
                                 aria-hidden
                                 className="
-        absolute inset-0 z-10 hidden lg:block
-        bg-[linear-gradient(90deg,rgba(239,238,245,1)_0%,rgba(239,238,245,0.6)_12%,transparent_28%)]
-      "
+                                    absolute inset-0 z-10 hidden lg:block
+                                    bg-[linear-gradient(90deg,rgba(239,238,245,1)_0%,rgba(239,238,245,0.6)_12%,transparent_28%)]
+                                "
                             />
 
-                            {/* 3) Cards ENCIMA del canvas y del fade */}
+                            {/* 3) Cards encima del canvas y del fade */}
                             <div className="relative z-20">
                                 <h2 className="sr-only">Nuestro Equipo</h2>
                                 <div className="grid gap-5 sm:grid-cols-2 [grid-auto-rows:1fr]">
