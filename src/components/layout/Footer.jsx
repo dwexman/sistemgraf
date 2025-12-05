@@ -15,7 +15,7 @@ export default function Footer() {
             {/* Fila 1: Redes */}
             <div className="flex items-center gap-3">
               <a
-                href="https://instagram.com/tu_cuenta"
+                href="https://www.instagram.com/sistemgraf.cl/"
                 aria-label="Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -25,7 +25,7 @@ export default function Footer() {
                 <FaInstagram size={20} />
               </a>
               <a
-                href="https://www.linkedin.com/company/tu_empresa"
+                href="https://www.linkedin.com/in/sistemgraf-cl-8a867b397/"
                 aria-label="LinkedIn"
                 target="_blank"
                 rel="noopener noreferrer"

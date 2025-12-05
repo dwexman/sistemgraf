@@ -8,7 +8,7 @@ const LINKS = [
   { id: "inicio", label: "Inicio", to: "/" },
   { id: "servicios", label: "Servicios", to: "/servicios" },
   { id: "equipo", label: "Equipo", to: "/equipo" },
-  // { id: "blog", label: "Blog", to: "/blog" }, 
+  { id: "blog", label: "Blog", to: "/blog" },
 ];
 
 export default function Navbar() {
@@ -17,8 +17,7 @@ export default function Navbar() {
   const active = location.pathname;
 
   const linkClass = (to) =>
-    `px-1 py-2 border-b-2 ${
-      active === to ? "border-white" : "border-transparent"
+    `px-1 py-2 border-b-2 ${active === to ? "border-white" : "border-transparent"
     } hover:border-white transition`;
 
   return (
@@ -62,20 +61,22 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="#"
+              href="https://www.instagram.com/sistemgraf.cl/"
               aria-label="Instagram"
               className="p-2 rounded-full ring-1 ring-white/15 hover:ring-white/30 transition"
               title="Instagram"
-              onClick={(e) => e.preventDefault()}
+              target="_blank"
+              rel="noreferrer"
             >
               <FaInstagram size={20} />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/sistemgraf-cl-8a867b397/"
               aria-label="LinkedIn"
               className="p-2 rounded-full ring-1 ring-white/15 hover:ring-white/30 transition"
               title="LinkedIn"
-              onClick={(e) => e.preventDefault()}
+              target="_blank"
+              rel="noreferrer"
             >
               <FaLinkedinIn size={20} />
             </a>
