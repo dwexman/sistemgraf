@@ -24,7 +24,15 @@ const ICONS = {
   9: desarrollo,
 };
 
-const servicios = [
+// 🔗 Base API: viene de .env (VITE_API_BASE_URL)
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://sistemgraf.cl/backend/index.php";
+
+// Endpoint real: https://sistemgraf.cl/backend/index.php/api/public/services
+const SERVICES_ENDPOINT = `${API_BASE_URL}/api/public/services`;
+
+// Fallback local: lo que tenías en duro antes
+const DEFAULT_SERVICIOS = [
   {
     id: 1,
     titulo: "Organigramas Inteligentes para Empresas",
@@ -33,7 +41,8 @@ const servicios = [
   },
   {
     id: 2,
-    titulo: "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos",
+    titulo:
+      "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos",
     descripcion:
       "Convierte cada capacitación en resultados medibles. Analizamos el impacto y el aprendizaje logrado por tus colaboradores a través de indicadores visuales y analítica avanzada, facilitando la toma de decisiones sobre futuras formaciones y asegurando que la inversión en desarrollo realmente potencie a tu equipo.",
   },
@@ -84,8 +93,13 @@ const servicios = [
 ];
 
 const SERVICE_CATEGORY = {
-  1: "diag", 6: "diag", 8: "diag", 5: "diag",
-  2: "cap", 3: "cap", 9: "cap",
+  1: "diag",
+  6: "diag",
+  8: "diag",
+  5: "diag",
+  2: "cap",
+  3: "cap",
+  9: "cap",
   4: "td",
   7: "seleccion",
 };
@@ -120,27 +134,31 @@ const CATEGORIES = [
 const CATEGORY_COLORS = {
   diag: {
     cardBg: "linear-gradient(180deg,#002E49 0%,#005587 100%)",
-    ctaBg:  "linear-gradient(90deg,#00A3E0 0%,#69A9D1 100%)",
+    ctaBg: "linear-gradient(90deg,#00A3E0 0%,#69A9D1 100%)",
     headerClosed: "linear-gradient(135deg,#003858 0%,#0073A3 100%)",
-    headerOpen:   "linear-gradient(135deg,rgba(0,56,88,0.72) 0%,rgba(0,115,163,0.36) 100%)",
+    headerOpen:
+      "linear-gradient(135deg,rgba(0,56,88,0.72) 0%,rgba(0,115,163,0.36) 100%)",
   },
   cap: {
     cardBg: "linear-gradient(180deg,#0A4D7A 0%,#117DB1 100%)",
-    ctaBg:  "linear-gradient(90deg,#1AA6E0 0%,#7ECBF0 100%)",
+    ctaBg: "linear-gradient(90deg,#1AA6E0 0%,#7ECBF0 100%)",
     headerClosed: "linear-gradient(135deg,#0B5688 0%,#1590C8 100%)",
-    headerOpen:   "linear-gradient(135deg,rgba(11,86,136,0.70) 0%,rgba(21,144,200,0.34) 100%)",
+    headerOpen:
+      "linear-gradient(135deg,rgba(11,86,136,0.70) 0%,rgba(21,144,200,0.34) 100%)",
   },
   td: {
     cardBg: "linear-gradient(180deg,#123B6B 0%,#1E63A7 100%)",
-    ctaBg:  "linear-gradient(90deg,#2D89E5 0%,#8AB9F5 100%)",
+    ctaBg: "linear-gradient(90deg,#2D89E5 0%,#8AB9F5 100%)",
     headerClosed: "linear-gradient(135deg,#14457C 0%,#2475C4 100%)",
-    headerOpen:   "linear-gradient(135deg,rgba(20,69,124,0.70) 0%,rgba(36,117,196,0.34) 100%)",
+    headerOpen:
+      "linear-gradient(135deg,rgba(20,69,124,0.70) 0%,rgba(36,117,196,0.34) 100%)",
   },
   seleccion: {
     cardBg: "linear-gradient(180deg,#1B4F91 0%,#4FA0E2 100%)",
-    ctaBg:  "linear-gradient(90deg,#58A9EA 0%,#A7D3F8 100%)",
+    ctaBg: "linear-gradient(90deg,#58A9EA 0%,#A7D3F8 100%)",
     headerClosed: "linear-gradient(135deg,#1E5AA5 0%,#64B0EC 100%)",
-    headerOpen:   "linear-gradient(135deg,rgba(30,90,165,0.68) 0%,rgba(100,176,236,0.32) 100%)",
+    headerOpen:
+      "linear-gradient(135deg,rgba(30,90,165,0.68) 0%,rgba(100,176,236,0.32) 100%)",
   },
 };
 
@@ -166,7 +184,16 @@ function IconBadge({ src, alt }) {
   );
 }
 
-function Card({ id, titulo, descripcion, icon, visible, isFocused, delay = 0, palette }) {
+function Card({
+  id,
+  titulo,
+  descripcion,
+  icon,
+  visible,
+  isFocused,
+  delay = 0,
+  palette,
+}) {
   return (
     <div
       id={`serv-${id}`}
@@ -177,7 +204,9 @@ function Card({ id, titulo, descripcion, icon, visible, isFocused, delay = 0, pa
         "hover:scale-[1.02] hover:shadow-[0_22px_34px_rgba(0,0,0,0.35)]",
         "text-center",
         "scroll-mt-20",
-        isFocused ? "ring-4 ring-[#00A3E0]/70 shadow-[0_0_0_6px_rgba(0,163,224,0.2)]" : ""
+        isFocused
+          ? "ring-4 ring-[#00A3E0]/70 shadow-[0_0_0_6px_rgba(0,163,224,0.2)]"
+          : "",
       ].join(" ")}
       style={{ transitionDelay: `${delay}ms`, background: palette.cardBg }}
     >
@@ -217,8 +246,12 @@ function CategoryAccordion({ cat, palette, active, setActive, children }) {
         className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
       >
         <div>
-          <span className="block font-extrabold text-[20px] md:text-[22px] leading-tight">{cat.titulo}</span>
-          <span className="block text-white/95 text-[14px] md:text-[15px] mt-1">{cat.descripcion}</span>
+          <span className="block font-extrabold text-[20px] md:text-[22px] leading-tight">
+            {cat.titulo}
+          </span>
+          <span className="block text-white/95 text-[14px] md:text-[15px] mt-1">
+            {cat.descripcion}
+          </span>
         </div>
 
         <span
@@ -230,7 +263,13 @@ function CategoryAccordion({ cat, palette, active, setActive, children }) {
           ].join(" ")}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M6 9l6 6 6-6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </span>
       </button>
@@ -243,9 +282,7 @@ function CategoryAccordion({ cat, palette, active, setActive, children }) {
         ].join(" ")}
       >
         <div className="min-h-0">
-          <div className="px-5 md:px-6 pb-6">
-            {children}
-          </div>
+          <div className="px-5 md:px-6 pb-6">{children}</div>
         </div>
       </div>
     </div>
@@ -315,12 +352,15 @@ function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }
 export default function Servicios() {
   const sectionRef = useRef(null);
   const [visible, setVisible] = useState(false);
-  const [activeId, setActiveId] = useState(null); 
-  const [activeCat, setActiveCat] = useState("diag"); 
-
+  const [activeId, setActiveId] = useState(null);
+  const [activeCat, setActiveCat] = useState("diag");
   const [focusedId, setFocusedId] = useState(null);
   const { hash } = useLocation();
 
+  // 🔹 Estado que se llenará con la API (parte con fallback local)
+  const [services, setServices] = useState(DEFAULT_SERVICIOS);
+
+  // Animación al hacer scroll
   useEffect(() => {
     const sec = sectionRef.current;
     if (!sec) return;
@@ -337,6 +377,42 @@ export default function Servicios() {
     return () => io.disconnect();
   }, []);
 
+  // 🛰️ Cargar servicios desde el backend de producción
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadServices() {
+      try {
+        const res = await fetch(SERVICES_ENDPOINT);
+
+        if (!res.ok) {
+          console.error("Error HTTP al cargar servicios:", res.status);
+          return;
+        }
+
+        const data = await res.json();
+        console.log("Servicios desde API:", data);
+
+        if (!Array.isArray(data)) return;
+
+        if (!cancelled) {
+          // data ya viene con: id, titulo, descripcion, category_key, icon_key
+          setServices(data);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Error llamando a la API de servicios:", err);
+      }
+    }
+
+    loadServices();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Manejo de #hash tipo #serv-3
   useEffect(() => {
     if (!hash) return;
     const targetId = hash.replace("#", "");
@@ -355,10 +431,16 @@ export default function Servicios() {
     }
   }, [hash]);
 
+  // Agrupar servicios por categoría
   const servicesByCategory = CATEGORIES.map((cat) => ({
     cat,
     palette: CATEGORY_COLORS[cat.key],
-    items: servicios.filter((s) => SERVICE_CATEGORY[s.id] === cat.key),
+    items: services.filter((s) => {
+      // Si viene de la API: usa category_key
+      // Si viene del fallback: usa SERVICE_CATEGORY
+      const catKey = s.category_key ?? SERVICE_CATEGORY[s.id];
+      return catKey === cat.key;
+    }),
   }));
 
   return (
@@ -392,8 +474,7 @@ export default function Servicios() {
           `}</style>
 
           <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-            <div className="w-[720px] h-[220px] rounded-full blur-3xl
-              bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,163,224,.18),rgba(0,85,135,.12)_45%,transparent_70%)]" />
+            <div className="w-[720px] h-[220px] rounded-full blur-3xl bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,163,224,.18),rgba(0,85,135,.12)_45%,transparent_70%)]" />
           </div>
 
           <h2
@@ -408,25 +489,41 @@ export default function Servicios() {
             Nuestros Servicios
 
             <span className="absolute -left-8 -top-2 sparkle" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00A3E0" strokeWidth="2">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00A3E0"
+                strokeWidth="2"
+              >
                 <path d="M12 2l1.8 4.2L18 8l-4.2 1.8L12 14l-1.8-4.2L6 8l4.2-1.8L12 2z" />
               </svg>
             </span>
-            <span className="absolute -right-7 top-1 sparkle [animation-delay:1.2s]" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#69A9D1" strokeWidth="2">
+            <span
+              className="absolute -right-7 top-1 sparkle [animation-delay:1.2s]"
+              aria-hidden="true"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#69A9D1"
+                strokeWidth="2"
+              >
                 <path d="M12 3l1.2 2.8L16 7l-2.8 1.2L12 11l-1.2-2.8L8 7l2.8-1.2L12 3z" />
               </svg>
             </span>
 
-            <span className="block mx-auto mt-3 h-[6px] w-48 rounded-full
-              bg-[linear-gradient(90deg,#005587, #00A3E0, #005587)]
-              animate-underline" />
+            <span className="block mx-auto mt-3 h-[6px] w-48 rounded-full bg-[linear-gradient(90deg,#005587, #00A3E0, #005587)] animate-underline" />
           </h2>
 
-          <p className="mt-5 text-[#0A2F4F] font-semibold leading-snug
-            text-[17px] sm:text-[19px] max-w-4xl mx-auto">
-            Disfruta de <span className="font-bold">dashboards interactivos</span>, <span className="font-bold">analítica avanzada</span> y
-            <span className="font-bold"> resultados en tiempo real</span> para una gestión ágil, precisa y escalable.
+          <p className="mt-5 text-[#0A2F4F] font-semibold leading-snug text-[17px] sm:text-[19px] max-w-4xl mx-auto">
+            Disfruta de <span className="font-bold">dashboards interactivos</span>
+            , <span className="font-bold">analítica avanzada</span> y
+            <span className="font-bold"> resultados en tiempo real</span> para una
+            gestión ágil, precisa y escalable.
           </p>
         </div>
 
@@ -446,7 +543,7 @@ export default function Servicios() {
                       id={items[0].id}
                       titulo={items[0].titulo}
                       descripcion={items[0].descripcion}
-                      icon={ICONS[items[0].id]}
+                      icon={ICONS[items[0].icon_key] || ICONS[items[0].id]}
                       visible={visible}
                       isFocused={false}
                       delay={0}
@@ -460,7 +557,7 @@ export default function Servicios() {
                       id={s.id}
                       titulo={s.titulo}
                       descripcion={s.descripcion}
-                      icon={ICONS[s.id]}
+                      icon={ICONS[s.icon_key] || ICONS[s.id]}
                       visible={visible}
                       isFocused={false}
                       delay={i * 120}
@@ -481,10 +578,16 @@ export default function Servicios() {
             setActiveId={setActiveId}
           >
             <p className="mb-3">
-              Desarrollos personalizados enfocados en las necesidades estratégicas de tu capital humano. Creamos soluciones tecnológicas a la medida para potenciar procesos de gestión, integración de sistemas, automatización de indicadores clave y desarrollo de herramientas BI de acuerdo con los retos específicos de tu organización.
+              Desarrollos personalizados enfocados en las necesidades estratégicas
+              de tu capital humano. Creamos soluciones tecnológicas a la medida para
+              potenciar procesos de gestión, integración de sistemas, automatización
+              de indicadores clave y desarrollo de herramientas BI de acuerdo con
+              los retos específicos de tu organización.
             </p>
             <p>
-              Nuestros desarrollos se adaptan al escenario actual de tu equipo, facilitando el diagnóstico de brechas, el monitoreo del talento y el crecimiento organizacional sostenible.
+              Nuestros desarrollos se adaptan al escenario actual de tu equipo,
+              facilitando el diagnóstico de brechas, el monitoreo del talento y el
+              crecimiento organizacional sostenible.
             </p>
           </AccordionItem>
 
@@ -495,10 +598,17 @@ export default function Servicios() {
             setActiveId={setActiveId}
           >
             <p className="mb-3">
-              En nuestro Servicio de Consultoría en Psicología Organizacional con herramientas avanzadas de Inteligencia de Negocios, ponemos el énfasis en la experiencia de nuestro equipo de psicólogos organizacionales certificados, quienes lideran la aplicación de remediales estratégicos y acciones de mejora basadas en datos rigurosos.
+              En nuestro Servicio de Consultoría en Psicología Organizacional con
+              herramientas avanzadas de Inteligencia de Negocios, ponemos el énfasis
+              en la experiencia de nuestro equipo de psicólogos organizacionales
+              certificados, quienes lideran la aplicación de remediales estratégicos
+              y acciones de mejora basadas en datos rigurosos.
             </p>
             <p>
-              Analizamos métricas clave del capital humano mediante dashboards avanzados y diagnósticos exhaustivos, para desarrollar intervenciones personalizadas que impactan el bienestar, el clima laboral, la gestión del desempeño y el desarrollo de talento.
+              Analizamos métricas clave del capital humano mediante dashboards
+              avanzados y diagnósticos exhaustivos, para desarrollar intervenciones
+              personalizadas que impactan el bienestar, el clima laboral, la gestión
+              del desempeño y el desarrollo de talento.
             </p>
           </AccordionItem>
         </div>

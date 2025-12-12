@@ -8,7 +8,7 @@ const LINKS = [
   { id: "inicio", label: "Inicio", to: "/" },
   { id: "servicios", label: "Servicios", to: "/servicios" },
   { id: "equipo", label: "Equipo", to: "/equipo" },
-  { id: "blog", label: "Blog", to: "/blog" },
+  //{ id: "blog", label: "Blog", to: "/blog" },
 ];
 
 export default function Navbar() {
