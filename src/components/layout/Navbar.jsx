@@ -16,6 +16,10 @@ export default function Navbar() {
   const location = useLocation();
   const active = location.pathname;
 
+  const INTRANET_URL =
+    import.meta.env.VITE_INTRANET_URL || "https://sistemgraf.cl/intranet";
+
+
   const linkClass = (to) =>
     `px-1 py-2 border-b-2 ${active === to ? "border-white" : "border-transparent"
     } hover:border-white transition`;
@@ -82,12 +86,14 @@ export default function Navbar() {
             </a>
 
             <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
+              href={INTRANET_URL}
               className="rounded-full bg-white text-[#0A2F4F] px-4 py-2 text-sm font-semibold shadow-sm hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
+              target="_blank"
+              rel="noreferrer"
             >
               Intranet
             </a>
+
           </div>
 
           <div className="md:hidden">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import blueBlobs from "../../assets/blueblobs.png";
 
@@ -28,10 +28,10 @@ const ICONS = {
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://sistemgraf.cl/backend/index.php";
 
-// Endpoint real: https://sistemgraf.cl/backend/index.php/api/public/services
 const SERVICES_ENDPOINT = `${API_BASE_URL}/api/public/services`;
+const CATEGORIES_ENDPOINT = `${API_BASE_URL}/api/public/categories`;
 
-// Fallback local: lo que tenías en duro antes
+// Fallback servicios (por si API falla)
 const DEFAULT_SERVICIOS = [
   {
     id: 1,
@@ -41,8 +41,7 @@ const DEFAULT_SERVICIOS = [
   },
   {
     id: 2,
-    titulo:
-      "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos",
+    titulo: "Evaluación de Aprendizaje Logrado en Capacitaciones a Equipos",
     descripcion:
       "Convierte cada capacitación en resultados medibles. Analizamos el impacto y el aprendizaje logrado por tus colaboradores a través de indicadores visuales y analítica avanzada, facilitando la toma de decisiones sobre futuras formaciones y asegurando que la inversión en desarrollo realmente potencie a tu equipo.",
   },
@@ -92,6 +91,7 @@ const DEFAULT_SERVICIOS = [
   },
 ];
 
+// Fallback de categoría por ID (solo para servicios legacy sin category_key)
 const SERVICE_CATEGORY = {
   1: "diag",
   6: "diag",
@@ -104,63 +104,149 @@ const SERVICE_CATEGORY = {
   7: "seleccion",
 };
 
-const CATEGORIES = [
+// Fallback categorías (si /categories falla o devuelve [])
+const DEFAULT_CATEGORIES = [
   {
+    id: 1,
     key: "diag",
-    titulo: "Diagnóstico Organizacional",
-    descripcion:
+    name: "Diagnóstico Organizacional",
+    description:
       "Identifica la situación actual de tu organización (estructura, cultura, clima, salud en el trabajo) para tomar decisiones estratégicas.",
+    colorFrom: "#002E49",
+    colorTo: "#005587",
+    ctaFrom: "#00A3E0",
+    ctaTo: "#69A9D1",
+    sort_order: 0,
+    is_active: true,
   },
   {
+    id: 2,
     key: "cap",
-    titulo: "Desarrollo del Talento y Capacitación",
-    descripcion:
+    name: "Desarrollo del Talento y Capacitación",
+    description:
       "Mide la efectividad de la formación para asegurar retorno de inversión y mejorar continuamente el desarrollo del talento.",
+    colorFrom: "#0A4D7A",
+    colorTo: "#117DB1",
+    ctaFrom: "#1AA6E0",
+    ctaTo: "#7ECBF0",
+    sort_order: 1,
+    is_active: true,
   },
   {
+    id: 3,
     key: "td",
-    titulo: "Transformación Digital y Analítica",
-    descripcion:
+    name: "Transformación Digital y Analítica",
+    description:
       "Prepara a tu organización para el uso avanzado de datos y automatiza la gestión de desempeño para mayor agilidad.",
+    colorFrom: "#123B6B",
+    colorTo: "#1E63A7",
+    ctaFrom: "#2D89E5",
+    ctaTo: "#8AB9F5",
+    sort_order: 2,
+    is_active: true,
   },
   {
+    id: 4,
     key: "seleccion",
-    titulo: "Atracción y Selección de Talento",
-    descripcion:
+    name: "Atracción y Selección de Talento",
+    description:
       "Optimiza el filtrado y selección de candidatos, reduciendo tiempos y costos y mejorando la calidad de las contrataciones.",
+    colorFrom: "#1B4F91",
+    colorTo: "#4FA0E2",
+    ctaFrom: "#58A9EA",
+    ctaTo: "#A7D3F8",
+    sort_order: 3,
+    is_active: true,
   },
 ];
 
-const CATEGORY_COLORS = {
-  diag: {
+// Paletas fallback (si hay categories nuevas sin registro aún)
+const EXTRA_PALETTES = [
+  {
     cardBg: "linear-gradient(180deg,#002E49 0%,#005587 100%)",
     ctaBg: "linear-gradient(90deg,#00A3E0 0%,#69A9D1 100%)",
     headerClosed: "linear-gradient(135deg,#003858 0%,#0073A3 100%)",
     headerOpen:
       "linear-gradient(135deg,rgba(0,56,88,0.72) 0%,rgba(0,115,163,0.36) 100%)",
   },
-  cap: {
+  {
     cardBg: "linear-gradient(180deg,#0A4D7A 0%,#117DB1 100%)",
     ctaBg: "linear-gradient(90deg,#1AA6E0 0%,#7ECBF0 100%)",
     headerClosed: "linear-gradient(135deg,#0B5688 0%,#1590C8 100%)",
     headerOpen:
       "linear-gradient(135deg,rgba(11,86,136,0.70) 0%,rgba(21,144,200,0.34) 100%)",
   },
-  td: {
+  {
     cardBg: "linear-gradient(180deg,#123B6B 0%,#1E63A7 100%)",
     ctaBg: "linear-gradient(90deg,#2D89E5 0%,#8AB9F5 100%)",
     headerClosed: "linear-gradient(135deg,#14457C 0%,#2475C4 100%)",
     headerOpen:
       "linear-gradient(135deg,rgba(20,69,124,0.70) 0%,rgba(36,117,196,0.34) 100%)",
   },
-  seleccion: {
+  {
     cardBg: "linear-gradient(180deg,#1B4F91 0%,#4FA0E2 100%)",
     ctaBg: "linear-gradient(90deg,#58A9EA 0%,#A7D3F8 100%)",
     headerClosed: "linear-gradient(135deg,#1E5AA5 0%,#64B0EC 100%)",
     headerOpen:
       "linear-gradient(135deg,rgba(30,90,165,0.68) 0%,rgba(100,176,236,0.32) 100%)",
   },
-};
+];
+
+function hashStr(str) {
+  let h = 0;
+  const s = String(str || "");
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  return h;
+}
+
+function paletteFallbackForKey(key) {
+  const h = Math.abs(hashStr(key));
+  return EXTRA_PALETTES[h % EXTRA_PALETTES.length];
+}
+
+function humanizeCategoryKey(key) {
+  return String(key || "")
+    .replace(/[-_]+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function hexToRgba(input, alpha) {
+  const v = String(input || "").trim();
+  if (!v) return `rgba(0,0,0,${alpha})`;
+  if (v.startsWith("rgb")) return v; // ya viene rgb/rgba
+  let hex = v.replace("#", "");
+  if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+  if (hex.length !== 6) return `rgba(0,0,0,${alpha})`;
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function paletteFromCategory(cat) {
+  // soporta camelCase y snake_case (por si acaso)
+  const colorFrom = cat?.colorFrom ?? cat?.color_from ?? "#002E49";
+  const colorTo = cat?.colorTo ?? cat?.color_to ?? "#005587";
+
+  const ctaFrom =
+    cat?.ctaFrom ?? cat?.cta_from ?? cat?.colorTo ?? cat?.color_to ?? "#00A3E0";
+  const ctaTo =
+    cat?.ctaTo ?? cat?.cta_to ?? cat?.colorFrom ?? cat?.color_from ?? "#69A9D1";
+
+  return {
+    cardBg: `linear-gradient(180deg,${colorFrom} 0%,${colorTo} 100%)`,
+    ctaBg: `linear-gradient(90deg,${ctaFrom} 0%,${ctaTo} 100%)`,
+    headerClosed: `linear-gradient(135deg,${colorFrom} 0%,${colorTo} 100%)`,
+    headerOpen: `linear-gradient(135deg,${hexToRgba(
+      colorFrom,
+      0.72
+    )} 0%,${hexToRgba(colorTo, 0.36)} 100%)`,
+  };
+}
 
 function IconBadge({ src, alt }) {
   return (
@@ -227,6 +313,9 @@ function Card({
 
 function CategoryAccordion({ cat, palette, active, setActive, children }) {
   const isOpen = active === cat.key;
+  const title = cat?.titulo ?? cat?.name ?? humanizeCategoryKey(cat?.key);
+  const desc = cat?.descripcion ?? cat?.description ?? "";
+
   return (
     <div
       className={[
@@ -247,11 +336,13 @@ function CategoryAccordion({ cat, palette, active, setActive, children }) {
       >
         <div>
           <span className="block font-extrabold text-[20px] md:text-[22px] leading-tight">
-            {cat.titulo}
+            {title}
           </span>
-          <span className="block text-white/95 text-[14px] md:text-[15px] mt-1">
-            {cat.descripcion}
-          </span>
+          {desc ? (
+            <span className="block text-white/95 text-[14px] md:text-[15px] mt-1">
+              {desc}
+            </span>
+          ) : null}
         </div>
 
         <span
@@ -289,7 +380,14 @@ function CategoryAccordion({ cat, palette, active, setActive, children }) {
   );
 }
 
-function AccordionItem({ id, title, children, activeId, setActiveId, delay = 0 }) {
+function AccordionItem({
+  id,
+  title,
+  children,
+  activeId,
+  setActiveId,
+  delay = 0,
+}) {
   const isOpen = activeId === id;
   return (
     <div
@@ -357,8 +455,9 @@ export default function Servicios() {
   const [focusedId, setFocusedId] = useState(null);
   const { hash } = useLocation();
 
-  // 🔹 Estado que se llenará con la API (parte con fallback local)
+  // 🔹 Estados API (con fallback)
   const [services, setServices] = useState(DEFAULT_SERVICIOS);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
 
   // Animación al hacer scroll
   useEffect(() => {
@@ -377,28 +476,98 @@ export default function Servicios() {
     return () => io.disconnect();
   }, []);
 
-  // 🛰️ Cargar servicios desde el backend de producción
+  // 1) 🛰️ Cargar categorías (colores + textos) desde backend
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCategories() {
+      try {
+        const res = await fetch(CATEGORIES_ENDPOINT, { cache: "no-store" });
+        if (!res.ok) {
+          console.error("Error HTTP al cargar categories:", res.status);
+          return;
+        }
+
+        const data = await res.json();
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.content)
+          ? data.content
+          : Array.isArray(data?.data?.content)
+          ? data.data.content
+          : null;
+
+        if (!Array.isArray(list)) {
+          console.error("categories no devolvió un array esperado.");
+          return;
+        }
+
+        // si viene vacío, mantenemos defaults
+        if (list.length === 0) return;
+
+        // normalizamos (por si viene snake_case)
+        const normalized = list
+          .map((c) => ({
+            id: c.id,
+            key: c.key,
+            name: c.name,
+            description: c.description,
+            colorFrom: c.colorFrom ?? c.color_from,
+            colorTo: c.colorTo ?? c.color_to,
+            ctaFrom: c.ctaFrom ?? c.cta_from,
+            ctaTo: c.ctaTo ?? c.cta_to,
+            sort_order: c.sort_order ?? 0,
+            is_active: c.is_active ?? true,
+          }))
+          .filter((c) => Boolean(c.key));
+
+        if (!cancelled && normalized.length) setCategories(normalized);
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Error llamando a categories:", err);
+      }
+    }
+
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // 2) 🛰️ Cargar servicios desde backend
   useEffect(() => {
     let cancelled = false;
 
     async function loadServices() {
       try {
-        const res = await fetch(SERVICES_ENDPOINT);
-
+        const res = await fetch(SERVICES_ENDPOINT, { cache: "no-store" });
         if (!res.ok) {
           console.error("Error HTTP al cargar servicios:", res.status);
           return;
         }
 
         const data = await res.json();
-        console.log("Servicios desde API:", data);
 
-        if (!Array.isArray(data)) return;
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.services)
+          ? data.services
+          : Array.isArray(data?.content)
+          ? data.content
+          : Array.isArray(data?.data?.content)
+          ? data.data.content
+          : null;
 
-        if (!cancelled) {
-          // data ya viene con: id, titulo, descripcion, category_key, icon_key
-          setServices(data);
+        if (!Array.isArray(list)) {
+          console.error("Servicios: formato inesperado (no array).");
+          return;
         }
+
+        if (!cancelled) setServices(list);
       } catch (err) {
         if (cancelled) return;
         console.error("Error llamando a la API de servicios:", err);
@@ -406,42 +575,100 @@ export default function Servicios() {
     }
 
     loadServices();
-
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Manejo de #hash tipo #serv-3
+  // ✅ categorías a renderizar: las de DB + (si aparece alguna nueva en services sin DB)
+  const categoriesToRender = useMemo(() => {
+    const sorted = [...(categories || [])].sort(
+      (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)
+    );
+
+    const existingKeys = new Set(sorted.map((c) => c.key));
+
+    const keysFromServices = Array.from(
+      new Set(
+        (services || [])
+          .map((s) => s.category_key ?? SERVICE_CATEGORY[s.id])
+          .filter(Boolean)
+      )
+    );
+
+    const extras = keysFromServices
+      .filter((k) => !existingKeys.has(k))
+      .map((k) => ({
+        id: `extra-${k}`,
+        key: k,
+        name: humanizeCategoryKey(k),
+        description: "Categoría creada desde la intranet (pendiente descripción).",
+        _isPlaceholder: true,
+        sort_order: 999,
+        is_active: true,
+      }));
+
+    return [...sorted, ...extras];
+  }, [categories, services]);
+
+  useEffect(() => {
+  if (!categoriesToRender.length) return;
+
+  if (activeCat === null) return;
+
+  const exists = categoriesToRender.some((c) => c.key === activeCat);
+  if (!exists) setActiveCat(categoriesToRender[0].key);
+}, [categoriesToRender, activeCat]);
+
+  // Paleta por categoría (usa DB; si es placeholder, usa fallback)
+  const paletteByKey = useMemo(() => {
+    const map = new Map();
+    (categoriesToRender || []).forEach((c) => {
+      const pal = c?._isPlaceholder
+        ? paletteFallbackForKey(c.key)
+        : paletteFromCategory(c);
+      map.set(c.key, pal);
+    });
+    return map;
+  }, [categoriesToRender]);
+
+  // Manejo de #hash tipo #serv-13
   useEffect(() => {
     if (!hash) return;
     const targetId = hash.replace("#", "");
     const el = document.getElementById(targetId);
-    if (el) {
-      requestAnimationFrame(() => {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        const num = parseInt(targetId.replace("serv-", ""), 10);
-        if (!Number.isNaN(num)) {
-          setFocusedId(num);
-          setTimeout(() => setFocusedId(null), 2500);
-          const catKey = SERVICE_CATEGORY[num];
-          if (catKey) setActiveCat(catKey);
-        }
-      });
-    }
-  }, [hash]);
+    if (!el) return;
+
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      const num = parseInt(targetId.replace("serv-", ""), 10);
+      if (!Number.isNaN(num)) {
+        setFocusedId(num);
+        setTimeout(() => setFocusedId(null), 2500);
+
+        const svc = (services || []).find((s) => Number(s.id) === num);
+        const catKey = svc?.category_key ?? SERVICE_CATEGORY[num];
+        if (catKey) setActiveCat(catKey);
+      }
+    });
+  }, [hash, services]);
 
   // Agrupar servicios por categoría
-  const servicesByCategory = CATEGORIES.map((cat) => ({
-    cat,
-    palette: CATEGORY_COLORS[cat.key],
-    items: services.filter((s) => {
-      // Si viene de la API: usa category_key
-      // Si viene del fallback: usa SERVICE_CATEGORY
-      const catKey = s.category_key ?? SERVICE_CATEGORY[s.id];
-      return catKey === cat.key;
-    }),
-  }));
+  const servicesByCategory = useMemo(() => {
+    return (categoriesToRender || []).map((cat) => {
+      const items = (services || []).filter((s) => {
+        const catKey = s.category_key ?? SERVICE_CATEGORY[s.id];
+        return catKey === cat.key;
+      });
+
+      return {
+        cat,
+        palette: paletteByKey.get(cat.key) || paletteFallbackForKey(cat.key),
+        items,
+      };
+    });
+  }, [categoriesToRender, services, paletteByKey]);
 
   return (
     <section
@@ -500,6 +727,7 @@ export default function Servicios() {
                 <path d="M12 2l1.8 4.2L18 8l-4.2 1.8L12 14l-1.8-4.2L6 8l4.2-1.8L12 2z" />
               </svg>
             </span>
+
             <span
               className="absolute -right-7 top-1 sparkle [animation-delay:1.2s]"
               aria-hidden="true"
@@ -520,9 +748,9 @@ export default function Servicios() {
           </h2>
 
           <p className="mt-5 text-[#0A2F4F] font-semibold leading-snug text-[17px] sm:text-[19px] max-w-4xl mx-auto">
-            Disfruta de <span className="font-bold">dashboards interactivos</span>
-            , <span className="font-bold">analítica avanzada</span> y
-            <span className="font-bold"> resultados en tiempo real</span> para una
+            Disfruta de <span className="font-bold">dashboards interactivos</span>,{" "}
+            <span className="font-bold">analítica avanzada</span> y{" "}
+            <span className="font-bold">resultados en tiempo real</span> para una
             gestión ágil, precisa y escalable.
           </p>
         </div>
@@ -537,7 +765,11 @@ export default function Servicios() {
               setActive={setActiveCat}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {items.length === 1 ? (
+                {items.length === 0 ? (
+                  <div className="col-span-full text-center text-white/90 text-sm py-3">
+                    Aún no hay servicios en esta categoría.
+                  </div>
+                ) : items.length === 1 ? (
                   <div className="lg:col-start-2 justify-self-center w-full">
                     <Card
                       id={items[0].id}
@@ -545,7 +777,7 @@ export default function Servicios() {
                       descripcion={items[0].descripcion}
                       icon={ICONS[items[0].icon_key] || ICONS[items[0].id]}
                       visible={visible}
-                      isFocused={false}
+                      isFocused={focusedId === items[0].id}
                       delay={0}
                       palette={palette}
                     />
@@ -559,7 +791,7 @@ export default function Servicios() {
                       descripcion={s.descripcion}
                       icon={ICONS[s.icon_key] || ICONS[s.id]}
                       visible={visible}
-                      isFocused={false}
+                      isFocused={focusedId === s.id}
                       delay={i * 120}
                       palette={palette}
                     />
