@@ -1,4 +1,5 @@
-import { FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FaInstagram, FaLinkedinIn, FaFacebookF } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import { FiPhone, FiMail } from "react-icons/fi";
 import logo2 from "../../assets/transparentwhitelogo.png";
 
@@ -10,7 +11,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Fila principal */}
         <div className="py-8 md:py-12 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-          {/* IZQUIERDA: IG + LinkedIn / Teléfono / Mail */}
+          {/* IZQUIERDA: Redes / Teléfono / Mail */}
           <div className="flex flex-col gap-4 md:gap-5">
             {/* Fila 1: Redes */}
             <div className="flex items-center gap-3">
@@ -24,6 +25,7 @@ export default function Footer() {
               >
                 <FaInstagram size={20} />
               </a>
+
               <a
                 href="https://www.linkedin.com/in/sistemgraf-cl-8a867b397/"
                 aria-label="LinkedIn"
@@ -33,6 +35,28 @@ export default function Footer() {
                 title="LinkedIn"
               >
                 <FaLinkedinIn size={20} />
+              </a>
+
+              <a
+                href="https://x.com/SistemgrafCL?s=20"
+                aria-label="X"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full ring-1 ring-white/20 hover:ring-white/40 transition"
+                title="X"
+              >
+                <FaXTwitter size={20} />
+              </a>
+
+              <a
+                href="https://www.facebook.com/profile.php?id=61583502002358"
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full ring-1 ring-white/20 hover:ring-white/40 transition"
+                title="Facebook"
+              >
+                <FaFacebookF size={20} />
               </a>
             </div>
 
