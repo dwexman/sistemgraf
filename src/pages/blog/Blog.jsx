@@ -1,120 +1,358 @@
-// src/pages/blog/Blog.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
 import blueBlobs from "../../assets/blueblobs.png";
-import blog1 from "../../assets/blog1.png";
-import blog2 from "../../assets/blog2.png";
 
 import ActualidadList from "./components/ActualidadList";
 import InvestigacionesList from "./components/InvestigacionesList";
 import PublicacionesList from "./components/PublicacionesList";
 
-/* Datos de ejemplo (reemplaza por API cuando quieras) */
-const actualidad = [
-  {
-    id: "a1",
-    title: "Tendencias BI 2025: decisiones con IA explicable",
-    excerpt:
-      "De indicadores descriptivos a analítica prescriptiva con modelos transparentes y auditables.",
-    author: "Equipo Sistemgraf",
-    date: "02 Sep 2025",
-    image: blog1,
-  },
-  {
-    id: "a2",
-    title: "People Analytics: del excel a la estrategia",
-    excerpt:
-      "Cómo pasar de reportes estáticos a insights accionables para RR.HH. y líderes.",
-    author: "María Ramos",
-    date: "28 Ago 2025",
-    image: blog2,
-  },
-];
-
-const investigaciones = [
-  {
-    id: "i1",
-    title:
-      "Efecto de tableros de desempeño en la retención de talento (estudio 2024-2025)",
-    excerpt:
-      "Resultados preliminares: OKRs visibles correlacionan con una mejora del 12% en retención.",
-    author: "Equipo I+D",
-    date: "18 Sep 2025",
-    image: blog2,
-  },
-  {
-    id: "i2",
-    title: "Algoritmos de recomendación de capacitación en empresas medianas",
-    excerpt:
-      "Matching de brechas y rutas de aprendizaje personalizadas con aprendizaje por refuerzo.",
-    author: "Jorge Fuentes",
-    date: "07 Sep 2025",
-    image: blog1,
-  },
-];
-
-const publicaciones = [
-  { id: "p01", month: "Enero",  title: "Guía de KPIs de Capital Humano", file: "/files/kpis-capital-humano.pdf", author: "Equipo Sistemgraf", date: "15 Ene 2025", image: blog1 },
-  { id: "p02", month: "Febrero",title: "Playbook de Tableros Ejecutivos",  file: "/files/tableros-ejecutivos.pdf",  author: "Equipo Sistemgraf", date: "14 Feb 2025", image: blog2 },
-  { id: "p03", month: "Marzo",  title: "Segmentación de Desempeño",       file: "/files/segmentacion-desempeno.pdf", author: "Equipo Sistemgraf", date: "12 Mar 2025", image: blog1 },
-  { id: "p04", month: "Abril",  title: "Benchmark de Engagement 2025",    file: "/files/benchmark-engagement-2025.pdf", author: "Equipo Sistemgraf", date: "16 Abr 2025", image: blog2 },
-];
-
-/* Tabs locales (sin navegación) */
+/* Tabs locales */
 const TAB_MAP = {
-  actualidad: { label: "Actualidad" },
-  investigaciones: { label: "Avances en Investigaciones" },
-  publicaciones: { label: "Publicaciones de Interés" },
+  actualidad: { label: "Actualidad", section: "actualidad" },
+  investigaciones: {
+    label: "Avances en Investigaciones",
+    section: "investigaciones",
+  },
+  publicaciones: { label: "Publicaciones de Interés", section: "publicaciones" },
 };
 
-function BottomRatingPanel() {
-  const [value, setValue] = useState(0);
+// ✅ OJO: NO uses /index.php acá. Solo el dominio/base real del backend.
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
+/* =========================
+   Helpers
+   ========================= */
+
+function toAbsUrl(apiBase, maybeUrl) {
+  if (!maybeUrl) return "";
+  if (/^https?:\/\//i.test(maybeUrl)) return maybeUrl;
+
+  const base = String(apiBase).replace(/\/+$/, "");
+  const path = String(maybeUrl).startsWith("/") ? maybeUrl : `/${maybeUrl}`;
+  return `${base}${path}`;
+}
+
+function formatDate(raw) {
+  if (!raw) return "";
+  try {
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("es-CL", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
+function getMonthName(raw) {
+  if (!raw) return "";
+  try {
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("es-CL", { month: "long" });
+  } catch {
+    return "";
+  }
+}
+
+function normalizeArticle(apiBase, a) {
+  const publishedAt =
+    a?.published_at || a?.publishedAt || a?.created_at || a?.createdAt || null;
+
+  const monthRaw = getMonthName(publishedAt);
+  const month =
+    monthRaw && monthRaw.length
+      ? monthRaw[0].toUpperCase() + monthRaw.slice(1)
+      : "";
+
+  return {
+    id: a?.id,
+    slug: a?.slug || "", // ✅ clave para el show
+    section: a?.section || "",
+    title: a?.title || "",
+    excerpt: a?.excerpt || "",
+    body: a?.body || "", // puede venir vacío si el listado no lo trae, ok
+    image: toAbsUrl(apiBase, a?.cover_url),
+    link: a?.link_url || "",
+    qr: toAbsUrl(apiBase, a?.qr_url),
+    date: formatDate(publishedAt),
+    published_at: publishedAt,
+    month,
+  };
+}
+
+/* =========================
+   Modal grande
+   ========================= */
+
+function BlogPostModal({ open, item, loading, error, onClose }) {
+  if (!open) return null;
+
   return (
-    <div className="mt-10 flex flex-col items-center">
-      <p className="text-sm text-[#0A2F4F]/70 mb-2">Valora esta sección</p>
-      <div className="flex items-center gap-2">
-        {Array.from({ length: 5 }).map((_, i) => {
-          const active = i < value;
-          return (
-            <button
-              key={i}
-              onClick={() => setValue(i + 1)}
-              className={`h-4 w-10 rounded-sm ${active ? "bg-[#00A3E0]" : "bg-[#E2E8F0]"}`}
-              aria-label={`Valor ${i + 1}`}
-              title={`${i + 1}/5`}
-            />
-          );
-        })}
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4">
+      {/* Overlay */}
+      <button
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
+        onClick={onClose}
+        aria-label="Cerrar modal"
+      />
+
+      {/* Card */}
+      <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl overflow-hidden border border-black/10">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 px-6 py-5 border-b border-black/10">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-[#005587] uppercase tracking-widest">
+              {item?.month ? `Publicación · ${item.month}` : "Entrada"}
+            </p>
+
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0A2F4F] mt-1 break-words">
+              {item?.title || (loading ? "Cargando…" : "Sin título")}
+            </h2>
+
+            {!!item?.date && (
+              <div className="mt-2 text-sm text-[#0A2F4F]/70">
+                <span>{item.date}</span>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={onClose}
+            className="shrink-0 rounded-full px-4 py-2 text-sm font-bold bg-[#005587] text-white hover:opacity-90"
+          >
+            Cerrar
+          </button>
+        </div>
+
+        {/* Body scroll */}
+        <div className="max-h-[75vh] overflow-y-auto">
+          {/* Loading / Error */}
+          {error ? (
+            <div className="px-6 py-6">
+              <div className="rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+                {error}
+              </div>
+            </div>
+          ) : loading ? (
+            <div className="px-6 py-10 text-[#0A2F4F]/70">Cargando…</div>
+          ) : item ? (
+            <>
+              {/* Image */}
+              {item.image ? (
+                <div className="px-6 pt-6">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-[240px] sm:h-[320px] object-cover rounded-2xl border border-black/5"
+                  />
+                </div>
+              ) : null}
+
+              {/* Content */}
+              <div className="px-6 py-6">
+                {item.excerpt ? (
+                  <p className="text-base sm:text-lg leading-relaxed text-[#0A2F4F]/90">
+                    {item.excerpt}
+                  </p>
+                ) : null}
+
+                {/* Link + QR */}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2 rounded-2xl border border-black/10 p-4">
+                    <p className="text-sm font-bold text-[#0A2F4F]">Link</p>
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-[#005587] hover:underline break-all"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {item.link}
+                        <span className="text-[#0A2F4F]/50">(abrir)</span>
+                      </a>
+                    ) : (
+                      <p className="mt-2 text-sm text-[#0A2F4F]/60">
+                        (Sin link asociado)
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-black/10 p-4 flex items-center justify-center">
+                    {item.qr ? (
+                      <img
+                        src={item.qr}
+                        alt={`QR ${item.title}`}
+                        className="w-[120px] h-[120px] object-contain"
+                      />
+                    ) : (
+                      <p className="text-sm text-[#0A2F4F]/60 text-center">
+                        (Sin QR)
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Body (HTML) */}
+                {item.body ? (
+                  <div className="mt-8 rounded-2xl border border-black/10 p-4">
+                    <p className="text-sm font-bold text-[#0A2F4F] mb-2">
+                      Contenido
+                    </p>
+                    <div
+                      className="prose max-w-none prose-p:leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: item.body }}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   );
 }
 
+/* =========================
+   Page
+   ========================= */
+
 export default function Blog() {
+  const apiBase = String(API_BASE).replace(/\/+$/, "");
+
   const [activeTab, setActiveTab] = useState("actualidad");
 
-  // Descargas anuales (solo para Publicaciones)
-  const MAX_YEARLY = 12;
-  const [downloadedIds, setDownloadedIds] = useState(new Set());
-  const downloadedCount = downloadedIds.size;
-  const downloadsLeft = Math.max(0, MAX_YEARLY - downloadedCount);
+  // Datos por tab
+  const [itemsByTab, setItemsByTab] = useState({
+    actualidad: [],
+    investigaciones: [],
+    publicaciones: [],
+  });
+  const [loadingByTab, setLoadingByTab] = useState({
+    actualidad: false,
+    investigaciones: false,
+    publicaciones: false,
+  });
+  const [errorByTab, setErrorByTab] = useState({
+    actualidad: "",
+    investigaciones: "",
+    publicaciones: "",
+  });
 
-  const handleDownload = (id) => {
-    setDownloadedIds((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-  };
+  // Modal + detalle
+  const [modalOpen, setModalOpen] = useState(false);
+  const [openItem, setOpenItem] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState("");
 
-  const SectionList = useMemo(() => {
-    if (activeTab === "actualidad") return actualidad;
-    if (activeTab === "investigaciones") return investigaciones;
-    return publicaciones;
-  }, [activeTab]);
+  // Fetch listado por tab
+  useEffect(() => {
+    const cfg = TAB_MAP[activeTab];
+    if (!cfg) return;
+
+    const controller = new AbortController();
+
+    const run = async () => {
+      setLoadingByTab((p) => ({ ...p, [activeTab]: true }));
+      setErrorByTab((p) => ({ ...p, [activeTab]: "" }));
+
+      try {
+        const params = new URLSearchParams();
+        params.set("per_page", "50");
+        params.set("page", "1");
+        params.set("status", "published");
+        params.set("section", cfg.section);
+
+        const res = await fetch(
+          `${apiBase}/api/public/articles?${params.toString()}`,
+          {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          }
+        );
+
+        if (!res.ok) throw new Error("No se pudo cargar el contenido");
+
+        const json = await res.json();
+        const rows = Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json)
+          ? json
+          : [];
+
+        const normalized = rows.map((a) => normalizeArticle(apiBase, a));
+        setItemsByTab((p) => ({ ...p, [activeTab]: normalized }));
+      } catch (e) {
+        if (e?.name !== "AbortError") {
+          setErrorByTab((p) => ({
+            ...p,
+            [activeTab]: e?.message || "Error al cargar",
+          }));
+        }
+      } finally {
+        setLoadingByTab((p) => ({ ...p, [activeTab]: false }));
+      }
+    };
+
+    run();
+    return () => controller.abort();
+  }, [activeTab, apiBase]);
+
+  const currentItems = useMemo(
+    () => itemsByTab[activeTab] || [],
+    [itemsByTab, activeTab]
+  );
+  const currentLoading = loadingByTab[activeTab];
+  const currentError = errorByTab[activeTab];
+
+  // ✅ Abrir modal: trae detalle por slug desde /api/public/articles/{slug}
+  const openModal = useCallback(
+    async (item) => {
+      setModalOpen(true);
+      setDetailError("");
+      setDetailLoading(true);
+
+      // mostramos algo inmediatamente
+      setOpenItem(item);
+
+      try {
+        const slug = item?.slug;
+        if (!slug) throw new Error("Artículo sin slug (no se puede abrir detalle)");
+
+        const res = await fetch(`${apiBase}/api/public/articles/${slug}`, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+
+        if (!res.ok) throw new Error("No se pudo cargar el detalle");
+
+        const full = await res.json();
+        setOpenItem(normalizeArticle(apiBase, full));
+      } catch (e) {
+        setDetailError(e?.message || "Error al abrir el artículo");
+      } finally {
+        setDetailLoading(false);
+      }
+    },
+    [apiBase]
+  );
+
+  const closeModal = useCallback(() => {
+    setModalOpen(false);
+    setOpenItem(null);
+    setDetailError("");
+    setDetailLoading(false);
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-[#EFEEF5] py-16 sm:py-20 min-h-screen">
-      {/* Fondo (z-0) */}
+      {/* Fondo */}
       <img
         src={blueBlobs}
         alt=""
@@ -123,16 +361,15 @@ export default function Blog() {
       />
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#EFEEF5]/60 via-transparent to-[#EFEEF5]/80" />
 
-      {/* Contenido (z-10) */}
+      {/* Contenido */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Cabecera: SOLO título */}
         <header className="text-center mb-10">
           <h1 className="text-[#0A2F4F] font-extrabold tracking-[0.12em] uppercase text-2xl sm:text-3xl">
             FORO
           </h1>
         </header>
 
-        {/* Menú superior (tabs locales) */}
+        {/* Tabs */}
         <nav className="mb-8">
           <div className="flex flex-wrap items-center justify-center gap-3">
             {Object.entries(TAB_MAP).map(([key, { label }]) => {
@@ -142,8 +379,11 @@ export default function Blog() {
                   key={key}
                   onClick={() => setActiveTab(key)}
                   className={`px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition
-                    ${active ? "bg-[#005587] text-white" : "bg-white text-[#005587] hover:bg-[#E6F6FC] ring-1 ring-[#005587]/20"}
-                  `}
+                    ${
+                      active
+                        ? "bg-[#005587] text-white"
+                        : "bg-white text-[#005587] hover:bg-[#E6F6FC] ring-1 ring-[#005587]/20"
+                    }`}
                 >
                   {label}
                 </button>
@@ -152,27 +392,39 @@ export default function Blog() {
           </div>
         </nav>
 
-        {/* Contenido por tab (SIN cambiar de página) */}
-        {activeTab === "actualidad" && <ActualidadList items={actualidad} />}
+        {/* Estado */}
+        {currentError ? (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm">
+            {currentError}
+          </div>
+        ) : null}
 
+        {currentLoading ? (
+          <div className="mb-6 rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-sm text-[#0A2F4F]/70">
+            Cargando…
+          </div>
+        ) : null}
+
+        {/* Contenido */}
+        {activeTab === "actualidad" && (
+          <ActualidadList items={currentItems} onOpen={openModal} />
+        )}
         {activeTab === "investigaciones" && (
-          <InvestigacionesList items={investigaciones} />
+          <InvestigacionesList items={currentItems} onOpen={openModal} />
         )}
-
         {activeTab === "publicaciones" && (
-          <PublicacionesList
-            items={SectionList}
-            maxYearly={MAX_YEARLY}
-            downloadedCount={downloadedCount}
-            downloadsLeft={downloadsLeft}
-            downloadedIds={downloadedIds}
-            onDownload={handleDownload}
-          />
+          <PublicacionesList items={currentItems} onOpen={openModal} />
         )}
-
-        {/* Panel inferior de valoración */}
-        <BottomRatingPanel />
       </div>
+
+      {/* Modal */}
+      <BlogPostModal
+        open={modalOpen}
+        item={openItem}
+        loading={detailLoading}
+        error={detailError}
+        onClose={closeModal}
+      />
     </section>
   );
 }

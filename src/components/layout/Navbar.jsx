@@ -9,7 +9,7 @@ const LINKS = [
   { id: "inicio", label: "Inicio", to: "/" },
   { id: "servicios", label: "Servicios", to: "/servicios" },
   { id: "equipo", label: "Equipo", to: "/equipo" },
-  //{ id: "blog", label: "Blog", to: "/blog" },
+  { id: "blog", label: "Blog", to: "/blog" },
 ];
 
 export default function Navbar() {
@@ -115,6 +115,7 @@ export default function Navbar() {
               <FaFacebookF size={20} />
             </a>
 
+            {/* ✅ Intranet directo (como antes) */}
             <a
               href={INTRANET_URL}
               className="rounded-full bg-white text-[#0A2F4F] px-4 py-2 text-sm font-semibold shadow-sm hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/30"
@@ -219,6 +220,7 @@ export default function Navbar() {
               </a>
             </div>
 
+            {/* ✅ Intranet directo (como antes) */}
             <a
               href={INTRANET_URL}
               target="_blank"
